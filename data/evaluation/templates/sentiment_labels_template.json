@@ -1,0 +1,11 @@
+{
+  "dataset_id": "template",
+  "description": "Template for manually labelled student feedback.",
+  "samples": [
+    {
+      "id": "feedback_id",
+      "feedback": "Student feedback text.",
+      "label": "Positive | Negative | Neutral"
+    }
+  ]
+}

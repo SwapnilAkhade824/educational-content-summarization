@@ -1,0 +1,14 @@
+{
+  "dataset_id": "template",
+  "description": "Template for manually annotated concepts and definitions.",
+  "text": "Educational text.",
+  "reference_entities": [
+    "Entity text"
+  ],
+  "reference_definitions": [
+    {
+      "concept": "Concept",
+      "definition": "Definition"
+    }
+  ]
+}

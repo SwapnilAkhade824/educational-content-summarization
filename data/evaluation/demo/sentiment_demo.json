@@ -1,0 +1,16 @@
+{
+  "dataset_id": "demo_sentiment_v1",
+  "description": "DEMONSTRATION DATA ONLY. Labels are manually assigned for evaluation demonstration.",
+  "samples": [
+    {"id": "s1", "feedback": "This course is excellent and very helpful.", "label": "Positive"},
+    {"id": "s2", "feedback": "I loved the clear explanations.", "label": "Positive"},
+    {"id": "s3", "feedback": "Great examples and well organized material.", "label": "Positive"},
+    {"id": "s4", "feedback": "The content is terrible and confusing.", "label": "Negative"},
+    {"id": "s5", "feedback": "I hated the unclear explanations.", "label": "Negative"},
+    {"id": "s6", "feedback": "Worst course I have taken.", "label": "Negative"},
+    {"id": "s7", "feedback": "The chapter covers several topics.", "label": "Neutral"},
+    {"id": "s8", "feedback": "It includes diagrams and text.", "label": "Neutral"},
+    {"id": "s9", "feedback": "The module has five sections.", "label": "Neutral"},
+    {"id": "s10", "feedback": "The content is acceptable and covers the basics.", "label": "Neutral"}
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "dataset_id": "template",
+  "description": "Template for summarization reference data. Populate with manually written or permitted reference summaries.",
+  "samples": [
+    {
+      "id": "sample_id",
+      "source_text": "Original educational text.",
+      "reference_summary": "Human-written reference summary.",
+      "notes": "Source and licensing notes."
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "dataset_id": "demo_summarization_v1",
+  "description": "DEMONSTRATION DATA ONLY. Reference summary is author-written for evaluation demonstration, not a published ground truth.",
+  "samples": [
+    {
+      "id": "demo_1",
+      "source_text": "Machine learning is a subset of artificial intelligence that enables computers to learn from data without explicit programming. Data preprocessing is an important step that cleans and transforms raw data. Model training uses algorithms to find patterns. Evaluation measures how well the model performs on unseen data.",
+      "reference_summary": "Machine learning enables computers to learn from data. Data preprocessing, model training, and evaluation are key steps.",
+      "notes": "Author-written demonstration reference."
+    }
+  ]
+}

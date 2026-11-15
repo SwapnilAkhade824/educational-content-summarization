@@ -1,0 +1,25 @@
+{
+  "dataset_id": "demo_concepts_v1",
+  "description": "DEMONSTRATION DATA ONLY. Annotations are author-created for evaluation demonstration.",
+  "text": "Machine Learning is a branch of artificial intelligence that enables computers to learn from data. Natural Language Processing refers to the ability of computers to understand human language. Deep learning means a subset of machine learning using neural networks. Google and Microsoft are leading organizations in AI research.",
+  "reference_entities": [
+    "Machine Learning",
+    "Natural Language Processing",
+    "Google",
+    "Microsoft"
+  ],
+  "reference_definitions": [
+    {
+      "concept": "Machine Learning",
+      "definition": "A branch of artificial intelligence that enables computers to learn from data"
+    },
+    {
+      "concept": "Natural Language Processing",
+      "definition": "The ability of computers to understand human language"
+    },
+    {
+      "concept": "Deep learning",
+      "definition": "A subset of machine learning using neural networks"
+    }
+  ]
+}
