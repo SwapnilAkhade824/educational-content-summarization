@@ -105,7 +105,7 @@ A sample author-created 7-page educational PDF is included at `data/raw/educatio
 ## 7. Installation
 
 ```powershell
-git clone https://github.com/<your-username>/educational-content-summarization.git
+git clone https://github.com/SwapnilAkhade824/educational-content-summarization.git
 cd educational-content-summarization
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1          # Linux/macOS: source .venv/bin/activate

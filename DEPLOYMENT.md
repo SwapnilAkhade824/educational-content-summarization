@@ -31,7 +31,7 @@ git ls-files | Select-String ".env$"   # must print nothing
 
 1. Open https://share.streamlit.io and sign in with GitHub.
 2. Click **Create app** → **Deploy a public app from GitHub**.
-3. Repository: `<your-username>/educational-content-summarization`, Branch: `main`, Main file path: `app.py`.
+3. Repository: `SwapnilAkhade824/educational-content-summarization`, Branch: `main`, Main file path: `app.py`.
 4. Open **Advanced settings**:
    - Python version: **3.12**
    - Secrets (TOML) – paste:
