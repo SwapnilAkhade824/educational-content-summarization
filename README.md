@@ -93,6 +93,7 @@ educational_content_summarization/
 ├── docs/                      # architecture, algorithms, dataset, demo script, poster content
 ├── scripts/                   # optional Gemini connection check
 ├── screenshots/               # application output screenshots
+├── certificate/               # AWS NLP Lab completion certificate (PDF)
 └── .github/workflows/ci.yml   # automated tests on every push
 ```
 

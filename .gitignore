@@ -56,5 +56,6 @@ Thumbs.db
 # Local development notes (not part of submission)
 _archive_dev_notes/
 
-# Sample dataset document shipped with the repo for demonstration
+# Sample dataset document and AWS certificate shipped for submission
 !data/raw/educational_content_nlp_test_document.pdf
+!certificate/AWS_NLP_Lab_Certificate.pdf
