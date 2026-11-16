@@ -8,8 +8,8 @@ A sample input document is included for demonstration and grading:
 
 | File | Description |
 |---|---|
-| `data/raw/educational_content_nlp_test_document.pdf` | Author-created 7-page educational PDF covering Artificial Intelligence, Machine Learning, Supervised & Unsupervised Learning, Neural Networks, NLP, TextRank & LDA, and NLP Evaluation. Contains definitional sentences ("X is defined as ...") so that rule-based definition extraction, NER, TextRank and LDA can all be demonstrated. |
-| `data/evaluation/demo/*.json` | Small author-created evaluation sets (summarization references, concept annotations, sentiment-labelled feedback). Demonstration only. |
+| `data/raw/educational_content_nlp_test_document.pdf` | Team-created 7-page educational PDF covering Artificial Intelligence, Machine Learning, Supervised & Unsupervised Learning, Neural Networks, NLP, TextRank & LDA, and NLP Evaluation. Contains definitional sentences ("X is defined as ...") so that rule-based definition extraction, NER, TextRank and LDA can all be demonstrated. |
+| `data/evaluation/demo/*.json` | Small team-created evaluation sets (summarization references, concept annotations, sentiment-labelled feedback). Demonstration only. |
 | `data/evaluation/templates/*.json` | Empty templates for adding human-labelled evaluation data. |
 | `data/evaluation/reports/evaluation_report.json` | Generated evaluation report (ROUGE, sentiment accuracy, concept F1, LDA reproducibility). |
 

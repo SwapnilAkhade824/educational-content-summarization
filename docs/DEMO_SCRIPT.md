@@ -1,5 +1,11 @@
 # Academic Demonstration Script
 
+- **Topic:** Educational Content Summarization System
+- **Key Concepts:** Extractive / Abstractive Summarization
+- **Team Members:**
+  - SWAPNIL SANTOSH AKHADE
+  - BANSUDE SUDARSHAN SAKHARAM
+
 This script walks through demonstrating the Educational Content Summarization System during project presentation or evaluation.
 
 ## 1. Startup & Environment Check

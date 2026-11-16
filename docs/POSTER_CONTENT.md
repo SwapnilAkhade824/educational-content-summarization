@@ -3,6 +3,13 @@
 ## Title
 Educational Content Summarization System
 
+## Key Concepts
+Extractive / Abstractive Summarization
+
+## Team Members
+- SWAPNIL SANTOSH AKHADE
+- BANSUDE SUDARSHAN SAKHARAM
+
 ## Problem Statement
 Students and educators face lengthy educational documents. Manual summarization, concept extraction and revision-note preparation are time-consuming, and pure LLM tools hide how results are produced.
 

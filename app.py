@@ -115,10 +115,22 @@ _STATUS_ICONS = {
     "Failed": "❌",
 }
 
+_STATUS_BADGES: Dict[str, str] = {
+    "Not Started": ":gray-badge[:material/schedule: Not started]",
+    "Running": ":blue-badge[:material/progress_activity: Running]",
+    "Completed": ":green-badge[:material/check_circle: Completed]",
+    "Warning": ":orange-badge[:material/warning: Warning]",
+    "Failed": ":red-badge[:material/error: Failed]",
+}
+
 
 def _badge(status: str) -> str:
     icon = _STATUS_ICONS.get(status, "⬜")
     return f"{icon} **{status}**"
+
+
+def _status_badge(status: str) -> str:
+    return _STATUS_BADGES.get(status, ":gray-badge[:material/schedule: Not started]")
 
 
 # ---------------------------------------------------------------------------
@@ -270,7 +282,11 @@ def _render_stage_log(stage_key: str) -> None:
     logs = st.session_state.get("stage_logs") or {}
     steps = logs.get(stage_key) or []
     if steps:
-        with st.expander(f"Execution phase log ({len(steps)} steps)", expanded=False):
+        with st.expander(
+            f"Execution phase log ({len(steps)} steps)",
+            expanded=False,
+            icon=":material/history:",
+        ):
             for idx, item in enumerate(steps, 1):
                 st.caption(f"{idx}. {item}")
 
@@ -747,24 +763,44 @@ def _run_gemini_stage(
 
 
 _STAGE_TITLES: Dict[int, str] = {
-    1: "Stage 1: Text Extraction",
-    2: "Stage 2: Sentence Tokenization",
-    3: "Stage 3: Word Tokenization",
-    4: "Stage 4: Text Cleaning",
-    5: "Stage 5: Stopword Removal",
+    1: "Stage 1: Text extraction",
+    2: "Stage 2: Sentence tokenization",
+    3: "Stage 3: Word tokenization",
+    4: "Stage 4: Text cleaning",
+    5: "Stage 5: Stopword removal",
     6: "Stage 6: Lemmatization",
-    7: "Stage 7: TF-IDF Vectorization",
-    8: "Stage 8: TextRank Summarization",
-    9: "Stage 9: Information Extraction",
-    10: "Stage 10: LDA Topic Modelling",
-    11: "Stage 11: Gemini Summarization",
+    7: "Stage 7: TF-IDF vectorization",
+    8: "Stage 8: TextRank summarization",
+    9: "Stage 9: Information extraction",
+    10: "Stage 10: LDA topic modelling",
+    11: "Stage 11: Gemini summarization",
+}
+
+_STAGE_ICONS: Dict[int, str] = {
+    1: ":material/description:",
+    2: ":material/segment:",
+    3: ":material/grain:",
+    4: ":material/cleaning_services:",
+    5: ":material/filter_alt:",
+    6: ":material/account_tree:",
+    7: ":material/grid_on:",
+    8: ":material/hub:",
+    9: ":material/lightbulb:",
+    10: ":material/category:",
+    11: ":material/auto_awesome:",
 }
 
 
+def _stage_heading_md(stage_num: int, status: str) -> str:
+    icon = _STAGE_ICONS.get(stage_num, "")
+    title = _STAGE_TITLES.get(stage_num, f"Stage {stage_num}")
+    return f"### {icon} {title} {_status_badge(status)}"
+
+
 def _display_stage_1(show_header: bool = True) -> None:
-    """Display Stage 1: Text Extraction."""
+    """Display Stage 1: Text extraction."""
     if show_header:
-        st.markdown(f"### Stage 1: Text Extraction {_badge(st.session_state['stage_extraction'])}")
+        st.markdown(_stage_heading_md(1, st.session_state["stage_extraction"]))
     _render_stage_log("stage_extraction")
     data = st.session_state.get("extracted_data")
     if data is None:
@@ -773,55 +809,89 @@ def _display_stage_1(show_header: bool = True) -> None:
     word_count = len(data.extracted_text.split()) if data.extracted_text else 0
 
     c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Original filename", data.filename)
-    c2.metric("Page count", data.page_count)
-    c3.metric("Character count", f"{char_count:,}")
-    c4.metric("Word count", f"{word_count:,}")
+    c1.metric("Original file", data.filename, border=True, height="stretch")
+    c2.metric("Page count", data.page_count, border=True, height="stretch")
+    c3.metric("Characters", f"{char_count:,}", border=True, height="stretch")
+    c4.metric("Words", f"{word_count:,}", border=True, height="stretch")
 
     if data.extraction_warnings:
         for w in data.extraction_warnings:
-            st.warning(w)
-    with st.expander("Extracted text", expanded=False):
+            st.warning(w, icon=":material/warning:")
+    with st.expander("Extracted text preview", expanded=False, icon=":material/article:"):
         st.text(data.extracted_text[:5000] if data.extracted_text else "(empty)")
         if char_count > 5000:
             st.caption(f"Showing first 5,000 of {char_count:,} total characters.")
 
 
 def _display_stage_2(show_header: bool = True) -> None:
-    """Display Stage 2: Sentence Tokenization."""
+    """Display Stage 2: Sentence tokenization."""
     if show_header:
-        st.markdown(f"### Stage 2: Sentence Tokenization {_badge(st.session_state['stage_sentence_tok'])}")
+        st.markdown(_stage_heading_md(2, st.session_state["stage_sentence_tok"]))
     _render_stage_log("stage_sentence_tok")
     sentences = st.session_state.get("sentences")
     if sentences is None:
         return
-    st.write(f"**Sentence count:** {len(sentences)}")
-    with st.expander("Numbered sentence list", expanded=False):
+    word_counts = [len(s.split()) for s in sentences]
+    avg_words = (sum(word_counts) / len(word_counts)) if word_counts else 0.0
+    max_words = max(word_counts) if word_counts else 0
+
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Segmented sentences", f"{len(sentences):,}", border=True, height="stretch")
+    c2.metric("Avg words / sentence", f"{avg_words:.1f}", border=True, height="stretch")
+    c3.metric("Longest sentence (words)", f"{max_words:,}", border=True, height="stretch")
+
+    with st.expander(
+        f"Segmented sentences ({len(sentences):,})",
+        expanded=False,
+        icon=":material/table_chart:",
+    ):
         df = pd.DataFrame(
-            [{"Sentence #": i, "Segmented Sentence": s, "Word Count": len(s.split())} for i, s in enumerate(sentences, 1)]
+            [
+                {"Sentence #": i, "Segmented Sentence": s, "Word Count": len(s.split())}
+                for i, s in enumerate(sentences, 1)
+            ]
         )
-        st.dataframe(df, hide_index=True, alt="Segmented sentences table")
+        st.dataframe(
+            df,
+            column_config={
+                "Sentence #": st.column_config.NumberColumn("Sentence #", format="%d"),
+                "Word Count": st.column_config.NumberColumn("Word count", format="%d"),
+            },
+            hide_index=True,
+            alt="Segmented sentences table",
+        )
 
 
 def _display_stage_3(show_header: bool = True) -> None:
-    """Display Stage 3: Word Tokenization."""
+    """Display Stage 3: Word tokenization."""
     if show_header:
-        st.markdown(f"### Stage 3: Word Tokenization {_badge(st.session_state['stage_word_tok'])}")
+        st.markdown(_stage_heading_md(3, st.session_state["stage_word_tok"]))
     _render_stage_log("stage_word_tok")
     tokens = st.session_state.get("word_tokens")
     if tokens is None:
         return
-    st.write(f"**Token count:** {len(tokens):,}")
-    with st.expander("Word token list (first 200 tokens)", expanded=False):
+    unique_tokens = len({t.lower() for t in tokens})
+    alpha_tokens = sum(1 for t in tokens if any(c.isalpha() for c in t))
+
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Total tokens", f"{len(tokens):,}", border=True, height="stretch")
+    c2.metric("Unique tokens", f"{unique_tokens:,}", border=True, height="stretch")
+    c3.metric("Alphabetic word tokens", f"{alpha_tokens:,}", border=True, height="stretch")
+
+    with st.expander(
+        "Word token sample (first 200 tokens)",
+        expanded=False,
+        icon=":material/data_array:",
+    ):
         st.write(tokens[:200])
         if len(tokens) > 200:
             st.caption(f"Showing first 200 of {len(tokens):,} total tokens.")
 
 
 def _display_stage_4(show_header: bool = True) -> None:
-    """Display Stage 4: Text Cleaning."""
+    """Display Stage 4: Text cleaning."""
     if show_header:
-        st.markdown(f"### Stage 4: Text Cleaning {_badge(st.session_state['stage_cleaning'])}")
+        st.markdown(_stage_heading_md(4, st.session_state["stage_cleaning"]))
     _render_stage_log("stage_cleaning")
     original = st.session_state.get("original_text")
     cleaned = st.session_state.get("cleaned_text")
@@ -829,23 +899,36 @@ def _display_stage_4(show_header: bool = True) -> None:
         return
     orig_len = len(original) if original else 0
     clean_len = len(cleaned)
-    st.write(
-        f"**Normalization results:** Unicode NFC normalized, control characters stripped, "
-        f"lowercased, and whitespace collapsed ({orig_len:,} → {clean_len:,} characters)."
+    removed_chars = max(0, orig_len - clean_len)
+
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Original length", f"{orig_len:,} chars", border=True, height="stretch")
+    c2.metric("Cleaned length", f"{clean_len:,} chars", border=True, height="stretch")
+    c3.metric("Characters removed", f"{removed_chars:,}", border=True, height="stretch")
+    st.caption(
+        "Applied Unicode NFC normalization, control-character removal, lowercasing, and whitespace collapse."
     )
     col1, col2 = st.columns(2)
     with col1:
-        with st.expander("Original text (first 2,000 chars)", expanded=False):
+        with st.expander(
+            "Original text (first 2,000 chars)",
+            expanded=False,
+            icon=":material/notes:",
+        ):
             st.text(original[:2000] if original else "")
     with col2:
-        with st.expander("Cleaned text (first 2,000 chars)", expanded=False):
+        with st.expander(
+            "Cleaned text (first 2,000 chars)",
+            expanded=False,
+            icon=":material/spellcheck:",
+        ):
             st.text(cleaned[:2000])
 
 
 def _display_stage_5(show_header: bool = True) -> None:
-    """Display Stage 5: Stopword Removal."""
+    """Display Stage 5: Stopword removal."""
     if show_header:
-        st.markdown(f"### Stage 5: Stopword Removal {_badge(st.session_state['stage_stopword'])}")
+        st.markdown(_stage_heading_md(5, st.session_state["stage_stopword"]))
     _render_stage_log("stage_stopword")
     raw_tokens = st.session_state.get("word_tokens") or []
     filtered = st.session_state.get("filtered_tokens")
@@ -856,37 +939,61 @@ def _display_stage_5(show_header: bool = True) -> None:
     retained_negations = sorted({t.lower() for t in filtered if t.lower() in PROTECTED_NEGATIONS})
 
     c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Tokens before removal", f"{len(raw_tokens):,}")
-    c2.metric("Removed stopword occurrences", f"{len(removed_list):,}")
-    c3.metric("Unique stopwords removed", f"{len(set(removed_list)):,}")
-    c4.metric("Remaining content tokens", f"{len(filtered):,}")
+    c1.metric("Tokens before removal", f"{len(raw_tokens):,}", border=True, height="stretch")
+    c2.metric("Removed stopword occurrences", f"{len(removed_list):,}", border=True, height="stretch")
+    c3.metric("Unique stopwords removed", f"{len(set(removed_list)):,}", border=True, height="stretch")
+    c4.metric("Remaining content tokens", f"{len(filtered):,}", border=True, height="stretch")
 
     st.caption(
         f"Protected negations configured: {', '.join(sorted(PROTECTED_NEGATIONS))}. "
         f"Present and retained in document: {', '.join(retained_negations) if retained_negations else 'none present'}."
     )
 
-    with st.expander("Tokens before removal (first 200)", expanded=False):
+    with st.expander(
+        "Tokens before removal (first 200)",
+        expanded=False,
+        icon=":material/data_array:",
+    ):
         st.write(raw_tokens[:200])
-    with st.expander("Identified & removed stopwords", expanded=False):
+    with st.expander(
+        "Identified & removed stopwords",
+        expanded=False,
+        icon=":material/filter_alt:",
+    ):
         if removed_list:
             counts: Dict[str, int] = {}
             for w in removed_list:
                 counts[w] = counts.get(w, 0) + 1
             sw_df = pd.DataFrame(
-                [{"Stopword": k, "Occurrences Removed": v} for k, v in sorted(counts.items(), key=lambda x: (-x[1], x[0]))]
+                [
+                    {"Stopword": k, "Occurrences Removed": v}
+                    for k, v in sorted(counts.items(), key=lambda x: (-x[1], x[0]))
+                ]
             )
-            st.dataframe(sw_df, hide_index=True, alt="Removed stopwords table")
+            st.dataframe(
+                sw_df,
+                column_config={
+                    "Occurrences Removed": st.column_config.NumberColumn(
+                        "Occurrences removed", format="%d"
+                    )
+                },
+                hide_index=True,
+                alt="Removed stopwords table",
+            )
         else:
             st.write("No stopwords removed.")
-    with st.expander("Remaining tokens (first 200)", expanded=False):
+    with st.expander(
+        "Remaining tokens (first 200)",
+        expanded=False,
+        icon=":material/check_circle:",
+    ):
         st.write(filtered[:200])
 
 
 def _display_stage_6(show_header: bool = True) -> None:
     """Display Stage 6: Lemmatization."""
     if show_header:
-        st.markdown(f"### Stage 6: Lemmatization {_badge(st.session_state['stage_lemma'])}")
+        st.markdown(_stage_heading_md(6, st.session_state["stage_lemma"]))
     _render_stage_log("stage_lemma")
     pairs = st.session_state.get("lemma_pairs")
     if pairs is None:
@@ -895,11 +1002,15 @@ def _display_stage_6(show_header: bool = True) -> None:
     unique_lemmas = len({lem for _, lem in pairs})
 
     c1, c2, c3 = st.columns(3)
-    c1.metric("Input filtered tokens", f"{len(pairs):,}")
-    c2.metric("Morphologically changed tokens", f"{len(changed):,}")
-    c3.metric("Unique lemmatized forms", f"{unique_lemmas:,}")
+    c1.metric("Input filtered tokens", f"{len(pairs):,}", border=True, height="stretch")
+    c2.metric("Morphologically changed tokens", f"{len(changed):,}", border=True, height="stretch")
+    c3.metric("Unique lemmatized forms", f"{unique_lemmas:,}", border=True, height="stretch")
 
-    with st.expander(f"Original Token | Lemmatized Token table ({len(pairs):,} total tokens)", expanded=False):
+    with st.expander(
+        f"Original token | lemmatized token table ({len(pairs):,} total tokens)",
+        expanded=False,
+        icon=":material/compare_arrows:",
+    ):
         all_df = pd.DataFrame(
             [
                 {
@@ -914,7 +1025,11 @@ def _display_stage_6(show_header: bool = True) -> None:
         if len(pairs) > 300:
             st.caption(f"Showing first 300 of {len(pairs):,} token pairs.")
 
-    with st.expander(f"Changed tokens only ({len(changed):,} changed pairs)", expanded=False):
+    with st.expander(
+        f"Changed tokens only ({len(changed):,} changed pairs)",
+        expanded=False,
+        icon=":material/compare_arrows:",
+    ):
         if changed:
             df = pd.DataFrame(changed[:200], columns=["Original Token", "Lemmatized Token"])
             st.dataframe(df, hide_index=True, alt="Changed lemmatized tokens table")
@@ -923,28 +1038,44 @@ def _display_stage_6(show_header: bool = True) -> None:
 
 
 def _display_stage_7(show_header: bool = True) -> None:
-    """Display Stage 7: TF-IDF Vectorization."""
+    """Display Stage 7: TF-IDF vectorization."""
     if show_header:
-        st.markdown(f"### Stage 7: TF-IDF Vectorization {_badge(st.session_state['stage_tfidf'])}")
+        st.markdown(_stage_heading_md(7, st.session_state["stage_tfidf"]))
     _render_stage_log("stage_tfidf")
     result = st.session_state.get("tfidf_result")
     if result is None:
         return
     c1, c2 = st.columns(2)
-    c1.metric("Vocabulary size", f"{len(result.feature_names):,}")
-    c2.metric("Matrix dimensions", f"{result.matrix_shape[0]} × {result.matrix_shape[1]}")
+    c1.metric("Vocabulary size", f"{len(result.feature_names):,}", border=True, height="stretch")
+    c2.metric(
+        "Matrix dimensions",
+        f"{result.matrix_shape[0]} × {result.matrix_shape[1]}",
+        border=True,
+        height="stretch",
+    )
 
-    with st.expander("Vocabulary terms (first 150)", expanded=False):
+    with st.expander("Vocabulary terms (first 150)", expanded=False, icon=":material/data_array:"):
         st.write(result.feature_names[:150])
-    with st.expander("Top weighted TF-IDF terms", expanded=False):
+    with st.expander("Top weighted TF-IDF terms", expanded=False, icon=":material/bar_chart:"):
         if result.top_terms:
             df = pd.DataFrame(
                 [{"Term": term, "TF-IDF Weight": round(weight, 6)} for term, weight in result.top_terms]
             )
-            st.dataframe(df, hide_index=True, alt="Top weighted TF-IDF terms")
+            st.dataframe(
+                df,
+                column_config={
+                    "TF-IDF Weight": st.column_config.NumberColumn("TF-IDF weight", format="%.4f")
+                },
+                hide_index=True,
+                alt="Top weighted TF-IDF terms",
+            )
         else:
             st.write("No top terms available.")
-    with st.expander("Numerical feature matrix (first 25 terms)", expanded=False):
+    with st.expander(
+        "Numerical feature matrix (first 25 terms)",
+        expanded=False,
+        icon=":material/grid_on:",
+    ):
         if result.matrix is not None:
             arr = result.matrix.toarray() if hasattr(result.matrix, "toarray") else np.asarray(result.matrix)
             display_arr = arr[:20, :25]
@@ -958,21 +1089,30 @@ def _display_stage_7(show_header: bool = True) -> None:
 
 
 def _display_stage_8(show_header: bool = True) -> None:
-    """Display Stage 8: TextRank Summarization."""
+    """Display Stage 8: TextRank summarization."""
     if show_header:
-        st.markdown(f"### Stage 8: TextRank Summarization {_badge(st.session_state['stage_textrank'])}")
+        st.markdown(_stage_heading_md(8, st.session_state["stage_textrank"]))
     _render_stage_log("stage_textrank")
     result = st.session_state.get("textrank_result")
     if result is None:
         return
 
     c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Candidate sentences", len(result.sentences) if result.sentences else len(result.sentence_scores))
-    c2.metric("Original word count", f"{result.original_word_count:,}")
-    c3.metric("Summary word count", f"{result.summary_word_count:,}")
-    c4.metric("Compression ratio", f"{result.compression_ratio:.2%}")
+    c1.metric(
+        "Candidate sentences",
+        len(result.sentences) if result.sentences else len(result.sentence_scores),
+        border=True,
+        height="stretch",
+    )
+    c2.metric("Original word count", f"{result.original_word_count:,}", border=True, height="stretch")
+    c3.metric("Summary word count", f"{result.summary_word_count:,}", border=True, height="stretch")
+    c4.metric("Compression ratio", f"{result.compression_ratio:.2%}", border=True, height="stretch")
 
-    with st.expander("1. Input candidate sentences & TF-IDF sentence vectorization", expanded=False):
+    with st.expander(
+        "1. Input candidate sentences & TF-IDF sentence vectorization",
+        expanded=False,
+        icon=":material/segment:",
+    ):
         vec_rows, vec_cols = result.sentence_vectors_shape
         st.write(
             f"**Sentence TF-IDF matrix shape:** `{vec_rows} sentences × {vec_cols} terms` "
@@ -989,7 +1129,11 @@ def _display_stage_8(show_header: bool = True) -> None:
     sim_matrix = result.similarity_matrix
     if sim_matrix is None:
         sim_matrix = st.session_state.get("similarity_matrix")
-    with st.expander("2. Pairwise sentence cosine similarity matrix", expanded=False):
+    with st.expander(
+        "2. Pairwise sentence cosine similarity matrix",
+        expanded=False,
+        icon=":material/grid_on:",
+    ):
         if sim_matrix is not None:
             labels = [f"S{i+1}" for i in range(len(sim_matrix))]
             df = pd.DataFrame(sim_matrix, index=labels, columns=labels)
@@ -997,7 +1141,11 @@ def _display_stage_8(show_header: bool = True) -> None:
         else:
             st.write("Not available (single sentence or fewer).")
 
-    with st.expander("3. Graph construction explanation & topology", expanded=False):
+    with st.expander(
+        "3. Graph construction explanation & topology",
+        expanded=False,
+        icon=":material/hub:",
+    ):
         st.write(
             "An undirected weighted graph $G = (V, E)$ is constructed where each vertex $v_i \\in V$ "
             "represents a unique candidate sentence. An edge $e_{ij} \\in E$ connects sentences $S_i$ and $S_j$ "
@@ -1008,7 +1156,11 @@ def _display_stage_8(show_header: bool = True) -> None:
         st.write(f"- **Graph vertices (sentences):** {result.graph_nodes}")
         st.write(f"- **Graph edges (non-zero similarity pairs):** {result.graph_edges}")
 
-    with st.expander("4. PageRank importance scores & ranked sentences", expanded=False):
+    with st.expander(
+        "4. PageRank importance scores & ranked sentences",
+        expanded=False,
+        icon=":material/bar_chart:",
+    ):
         if result.sentence_scores:
             input_sents = result.sentences or list(result.sentence_scores.keys())
             idx_map = {s: idx + 1 for idx, s in enumerate(input_sents)}
@@ -1018,39 +1170,55 @@ def _display_stage_8(show_header: bool = True) -> None:
                     "Rank": rank,
                     "Node": f"S{idx_map.get(s, rank)}",
                     "PageRank Score": round(score, 6),
-                    "Selected": "Yes ✅" if s in result.selected_sentences else "No",
+                    "Selected": "Selected" if s in result.selected_sentences else "—",
                     "Sentence": s,
                 }
                 for rank, (s, score) in enumerate(ranked, 1)
             ]
-            st.dataframe(pd.DataFrame(scores_data), hide_index=True, alt="PageRank sentence scores")
+            st.dataframe(
+                pd.DataFrame(scores_data),
+                column_config={
+                    "PageRank Score": st.column_config.NumberColumn("PageRank score", format="%.5f")
+                },
+                hide_index=True,
+                alt="PageRank sentence scores",
+            )
 
-    with st.expander("5. Selected sentences (restored to original document order)", expanded=False):
+    with st.expander(
+        "5. Selected sentences (restored to original document order)",
+        expanded=False,
+        icon=":material/check_circle:",
+    ):
         for i, s in enumerate(result.selected_sentences, 1):
             st.write(f"{i}. {s}")
 
-    st.write("**Final Extractive Summary (TextRank):**")
-    st.info(result.summary_text if result.summary_text else "_No summary generated._")
+    with st.container(border=True):
+        st.markdown("**:material/summarize: Final extractive summary (TextRank)**")
+        st.markdown(result.summary_text if result.summary_text else "_No summary generated._")
 
 
 def _display_stage_9(show_header: bool = True) -> None:
-    """Display Stage 9: Information Extraction."""
+    """Display Stage 9: Information extraction."""
     if show_header:
-        st.markdown(f"### Stage 9: Information Extraction {_badge(st.session_state['stage_info_extraction'])}")
+        st.markdown(_stage_heading_md(9, st.session_state["stage_info_extraction"]))
     _render_stage_log("stage_info_extraction")
     result = st.session_state.get("concepts_result")
     if result is None:
         return
     if result.warnings:
         for w in result.warnings:
-            st.warning(w)
+            st.warning(w, icon=":material/warning:")
 
     c1, c2, c3 = st.columns(3)
-    c1.metric("Named entities (spaCy NER)", len(result.entities))
-    c2.metric("Noun-chunk keyphrases", len(result.keyphrases))
-    c3.metric("Extracted definitions", len(result.definitions))
+    c1.metric("Named entities (spaCy NER)", len(result.entities), border=True, height="stretch")
+    c2.metric("Noun-chunk keyphrases", len(result.keyphrases), border=True, height="stretch")
+    c3.metric("Extracted definitions", len(result.definitions), border=True, height="stretch")
 
-    with st.expander(f"Named entities ({len(result.entities)})", expanded=False):
+    with st.expander(
+        f"Named entities ({len(result.entities)})",
+        expanded=False,
+        icon=":material/category:",
+    ):
         if result.entities:
             df = pd.DataFrame(
                 [
@@ -1067,16 +1235,31 @@ def _display_stage_9(show_header: bool = True) -> None:
         else:
             st.write("No named entities found.")
 
-    with st.expander(f"Keyphrases & important concepts ({len(result.keyphrases)})", expanded=False):
+    with st.expander(
+        f"Keyphrases & important concepts ({len(result.keyphrases)})",
+        expanded=False,
+        icon=":material/lightbulb:",
+    ):
         if result.keyphrases:
             df = pd.DataFrame(
                 [{"Keyphrase / Concept": k.text, "Frequency-Length Score": round(k.score, 3)} for k in result.keyphrases]
             )
-            st.dataframe(df, hide_index=True, alt="Keyphrases table")
+            st.dataframe(
+                df,
+                column_config={
+                    "Frequency-Length Score": st.column_config.NumberColumn("Score", format="%.3f")
+                },
+                hide_index=True,
+                alt="Keyphrases table",
+            )
         else:
             st.write("No keyphrases found.")
 
-    with st.expander(f"Rule-based extracted definitions ({len(result.definitions)})", expanded=False):
+    with st.expander(
+        f"Rule-based extracted definitions ({len(result.definitions)})",
+        expanded=False,
+        icon=":material/menu_book:",
+    ):
         if result.definitions:
             df = pd.DataFrame(
                 [
@@ -1095,25 +1278,35 @@ def _display_stage_9(show_header: bool = True) -> None:
 
 
 def _display_stage_10(show_header: bool = True) -> None:
-    """Display Stage 10: LDA Topic Modelling."""
+    """Display Stage 10: LDA topic modelling."""
     if show_header:
-        st.markdown(f"### Stage 10: LDA Topic Modelling {_badge(st.session_state['stage_lda'])}")
+        st.markdown(_stage_heading_md(10, st.session_state["stage_lda"]))
     _render_stage_log("stage_lda")
     result = st.session_state.get("lda_result")
     if result is None:
         return
     if result.warnings:
         for w in result.warnings:
-            st.warning(w)
+            st.warning(w, icon=":material/warning:")
 
     n_topics_eff = result.model_config.get("n_topics_effective", len(result.topics))
     c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Number of topics", n_topics_eff)
-    c2.metric("Input chunks", len(result.chunks) if result.chunks else len(result.document_topics))
-    c3.metric("CountVectorizer vocab", result.vocabulary_size)
-    c4.metric("Model perplexity", f"{result.perplexity:.2f}" if result.perplexity is not None else "N/A")
+    c1.metric("Number of topics", n_topics_eff, border=True, height="stretch")
+    c2.metric(
+        "Input chunks",
+        len(result.chunks) if result.chunks else len(result.document_topics),
+        border=True,
+        height="stretch",
+    )
+    c3.metric("CountVectorizer vocab", result.vocabulary_size, border=True, height="stretch")
+    c4.metric(
+        "Model perplexity",
+        f"{result.perplexity:.2f}" if result.perplexity is not None else "N/A",
+        border=True,
+        height="stretch",
+    )
 
-    with st.expander("1. Input document chunks", expanded=False):
+    with st.expander("1. Input document chunks", expanded=False, icon=":material/segment:"):
         if result.chunks:
             chunk_df = pd.DataFrame(
                 [
@@ -1128,7 +1321,11 @@ def _display_stage_10(show_header: bool = True) -> None:
             )
             st.dataframe(chunk_df, hide_index=True, alt="LDA document snippets")
 
-    with st.expander("2. CountVectorizer (Bag-of-Words) representation", expanded=False):
+    with st.expander(
+        "2. CountVectorizer (Bag-of-Words) representation",
+        expanded=False,
+        icon=":material/grid_on:",
+    ):
         st.write(
             f"**Matrix dimensions:** `{result.bow_matrix_shape[0]} chunks × {result.bow_matrix_shape[1]} terms` "
             f"(English stopwords removed)."
@@ -1148,18 +1345,35 @@ def _display_stage_10(show_header: bool = True) -> None:
                 alt="CountVectorizer matrix preview",
             )
 
-    with st.expander("3. Topic keywords & normalized word weights", expanded=False):
+    with st.expander(
+        "3. Topic keywords & normalized word weights",
+        expanded=False,
+        icon=":material/category:",
+    ):
         if result.topics:
             for topic in result.topics:
                 st.write(f"**Topic {topic.topic_id}:** {', '.join(topic.keywords)}")
                 df = pd.DataFrame(
                     [{"Keyword": k, "Normalized Weight": round(w, 4)} for k, w in zip(topic.keywords, topic.weights)]
                 )
-                st.dataframe(df, hide_index=True, alt=f"Topic {topic.topic_id} keyword weights")
+                st.dataframe(
+                    df,
+                    column_config={
+                        "Normalized Weight": st.column_config.NumberColumn(
+                            "Normalized weight", format="%.4f"
+                        )
+                    },
+                    hide_index=True,
+                    alt=f"Topic {topic.topic_id} keyword weights",
+                )
         else:
             st.write("No topics generated.")
 
-    with st.expander("4. Document-topic probability distributions & dominant topic assignments", expanded=False):
+    with st.expander(
+        "4. Document-topic probability distributions & dominant topic assignments",
+        expanded=False,
+        icon=":material/table_chart:",
+    ):
         if result.document_topics:
             rows = []
             for d in result.document_topics:
@@ -1179,7 +1393,11 @@ def _display_stage_10(show_header: bool = True) -> None:
     # Optional CO3 Cloud-AI Topic Interpretation (Google Gemini)
     cfg = load_config()
     if cfg.is_configured and result.topics:
-        if st.button("Interpret LDA topics with Gemini (Cloud AI — CO3)", key="btn_interpret_topics"):
+        if st.button(
+            "Interpret LDA topics with Gemini (Cloud AI — CO3)",
+            key="btn_interpret_topics",
+            icon=":material/auto_awesome:",
+        ):
             with st.status("Interpreting LDA topics with Google Gemini (1 batched request)...", expanded=True) as status_box:
                 try:
                     st.write("Sending local LDA topic keywords and weights to Gemini...")
@@ -1192,29 +1410,48 @@ def _display_stage_10(show_header: bool = True) -> None:
 
     interps = st.session_state.get("lda_interpretations")
     if interps:
-        with st.expander("5. Cloud-AI Topic Interpretations (Gemini — LLM-assisted)", expanded=True):
+        with st.expander(
+            "5. Cloud-AI Topic Interpretations (Gemini — LLM-assisted)",
+            expanded=True,
+            icon=":material/auto_awesome:",
+        ):
             for item in interps:
                 st.markdown(f"**Topic {item.topic_id}: {item.title}**")
                 st.write(item.explanation)
                 st.caption(f"Source LDA keywords: {', '.join(item.keywords)}")
 
 
+_GEMINI_TAB_ICONS: Dict[str, str] = {
+    "short": ":material/short_text:",
+    "detailed": ":material/subject:",
+    "bullets": ":material/format_list_bulleted:",
+    "definitions": ":material/menu_book:",
+    "revision": ":material/school:",
+}
+
+
 def _display_stage_11(show_header: bool = True) -> None:
-    """Display Stage 11: Gemini Summarization."""
+    """Display Stage 11: Gemini summarization."""
     if show_header:
-        st.markdown(f"### Stage 11: Gemini Summarization {_badge(st.session_state['stage_gemini'])}")
+        st.markdown(_stage_heading_md(11, st.session_state["stage_gemini"]))
     _render_stage_log("stage_gemini")
     cfg = load_config()
     c_mod, c_stat, c_tok = st.columns(3)
-    c_mod.metric("Configured model", cfg.model_id or "Not set")
-    c_stat.metric("Generation status", st.session_state.get("stage_gemini", "Not Started"))
+    c_mod.metric("Configured model", cfg.model_id or "Not set", border=True, height="stretch")
+    c_stat.metric("Generation status", st.session_state.get("stage_gemini", "Not Started"), border=True, height="stretch")
     tok_count = st.session_state.get("gemini_token_count")
-    c_tok.metric("Document token count (SDK)", f"{tok_count:,}" if tok_count is not None else "N/A")
+    c_tok.metric(
+        "Document token count (SDK)",
+        f"{tok_count:,}" if tok_count is not None else "N/A",
+        border=True,
+        height="stretch",
+    )
 
     if not cfg.is_configured:
         st.info(
             "Gemini is not configured. Set your API key in .env. "
-            "All traditional NLP stages (Stages 1–10) and VADER sentiment analysis work independently."
+            "All traditional NLP stages (Stages 1–10) and VADER sentiment analysis work independently.",
+            icon=":material/info:",
         )
         return
 
@@ -1223,18 +1460,34 @@ def _display_stage_11(show_header: bool = True) -> None:
         c1, c2, c3, c4 = st.columns(4)
         p_idx = status_info.get("phase_index", 0)
         p_tot = status_info.get("total_phases", 5)
-        c1.metric("Summarization phase", f"{p_idx} / {p_tot}" if p_idx else "Completed")
+        c1.metric(
+            "Summarization phase",
+            f"{p_idx} / {p_tot}" if p_idx else "Completed",
+            border=True,
+            height="stretch",
+        )
         c2.metric(
             "Chunk progress",
             f"{status_info.get('current_chunk', 0)} / {status_info.get('total_chunks', 0)}",
+            border=True,
+            height="stretch",
         )
-        c3.metric("Completed chunks", status_info.get("completed_chunks", 0))
-        c4.metric("Current step status", status_info.get("retry_status", "N/A"))
+        c3.metric("Completed chunks", status_info.get("completed_chunks", 0), border=True, height="stretch")
+        c4.metric(
+            "Current step status",
+            status_info.get("retry_status", "N/A"),
+            border=True,
+            height="stretch",
+        )
 
     error_msg = st.session_state.get("gemini_error")
     if error_msg:
-        st.error(f"Gemini error: {error_msg}")
-        if st.button("🔁 Retry Gemini Summarization (resume uncompleted phases/chunks)", key="retry_gemini_btn"):
+        st.error(f"Gemini error: {error_msg}", icon=":material/error:")
+        if st.button(
+            "Retry Gemini summarization (resume uncompleted phases/chunks)",
+            key="retry_gemini_btn",
+            icon=":material/refresh:",
+        ):
             _execute_stage_with_live_feedback(11)
             st.rerun()
 
@@ -1242,9 +1495,15 @@ def _display_stage_11(show_header: bool = True) -> None:
     if not results:
         return
 
-    for key, label in _GEMINI_SUMMARY_PHASES:
-        with st.expander(label, expanded=(key == "short")):
-            st.markdown(results.get(key, "_Not generated yet._"))
+    tab_labels = [
+        f"{_GEMINI_TAB_ICONS.get(key, '')} {label}".strip()
+        for key, label in _GEMINI_SUMMARY_PHASES
+    ]
+    with st.container(border=True):
+        tabs = st.tabs(tab_labels)
+        for tab, (key, _label) in zip(tabs, _GEMINI_SUMMARY_PHASES):
+            with tab:
+                st.markdown(results.get(key, "_Not generated yet._"))
 
 
 # ---------------------------------------------------------------------------
@@ -1267,7 +1526,7 @@ def _execute_stage_with_live_feedback(
     stage_key = _STAGE_KEYS[stage_num - 1]
 
     if title_placeholder is not None:
-        title_placeholder.markdown(f"### {title} {_badge('Running')}")
+        title_placeholder.markdown(_stage_heading_md(stage_num, "Running"))
 
     with target:
         status_box = st.status(f"Running {title}...", state="running", expanded=True)
@@ -1322,9 +1581,37 @@ def _execute_stage_with_live_feedback(
                 status_box.update(label=f"{title} — {st_state}", state=final_state, expanded=(final_state == "error"))
 
     if title_placeholder is not None:
-        title_placeholder.markdown(f"### {title} {_badge(st.session_state.get(stage_key, 'Not Started'))}")
+        title_placeholder.markdown(
+            _stage_heading_md(stage_num, st.session_state.get(stage_key, "Not Started"))
+        )
 
     return ok
+
+
+def _render_overview_kpis(slot: Any, uploaded: Any, cfg: Any) -> None:
+    """Render top-level pipeline status metrics into the given placeholder slot."""
+    data = st.session_state.get("extracted_data")
+    completed_stages = sum(
+        1 for k in _STAGE_KEYS if st.session_state.get(k) == "Completed"
+    )
+    active_doc = (
+        data.filename
+        if data is not None
+        else (uploaded.name if uploaded is not None else "None uploaded")
+    )
+    doc_words = (
+        f"{len(data.extracted_text.split()):,} words"
+        if data is not None and data.extracted_text
+        else "— words"
+    )
+    ai_status = cfg.model_id or "Configured" if cfg.is_configured else "Local NLP mode"
+
+    with slot.container():
+        k1, k2, k3, k4 = st.columns(4)
+        k1.metric("Active document", active_doc, border=True, height="stretch")
+        k2.metric("Stages completed", f"{completed_stages} / 11", border=True, height="stretch")
+        k3.metric("Document length", doc_words, border=True, height="stretch")
+        k4.metric("Gemini cloud AI", ai_status, border=True, height="stretch")
 
 
 # ---------------------------------------------------------------------------
@@ -1333,19 +1620,34 @@ def _execute_stage_with_live_feedback(
 
 
 def main() -> None:
-    st.set_page_config(page_title="Educational Content Summarizer", layout="wide")
+    st.set_page_config(
+        page_title="Educational content summarizer",
+        page_icon=":material/school:",
+        layout="wide",
+    )
     _ensure_nltk_resources()
     _init_state()
     _reconcile_interrupted_stages()
 
     # ---- SIDEBAR ----
-    st.sidebar.title("Educational Content Summarizer")
-    uploaded = st.sidebar.file_uploader("Upload PDF or TXT", type=["pdf", "txt"])
-    num_sentences = st.sidebar.slider("TextRank sentences", 1, 10, 3)
-    n_topics = st.sidebar.slider("LDA topics", 2, 8, 3)
+    with st.sidebar:
+        st.header("Pipeline controls", icon=":material/tune:")
+        st.caption("Upload a course document and configure NLP parameters.")
+        uploaded = st.file_uploader("Upload PDF or TXT", type=["pdf", "txt"])
+        num_sentences = st.slider("TextRank sentences", 1, 10, 3)
+        n_topics = st.slider("LDA topics", 2, 8, 3)
 
-    run_pipeline = st.sidebar.button("▶ Run Complete Pipeline", type="primary", width="stretch")
-    reset = st.sidebar.button("🔄 Reset", width="stretch")
+        run_pipeline = st.button(
+            "Run complete pipeline",
+            icon=":material/play_arrow:",
+            type="primary",
+            width="stretch",
+        )
+        reset = st.button(
+            "Reset workspace",
+            icon=":material/restart_alt:",
+            width="stretch",
+        )
 
     if reset:
         _reset_state()
@@ -1355,32 +1657,55 @@ def main() -> None:
     if uploaded is not None:
         doc_changed = _ensure_fresh_document(uploaded.name, uploaded.getvalue())
         if doc_changed:
-            st.info(f"New source document detected ({uploaded.name}). Previous stage outputs were cleared.")
+            st.info(
+                f"New source document detected ({uploaded.name}). Previous stage outputs were cleared.",
+                icon=":material/info:",
+            )
 
     # Document info in sidebar
     data = st.session_state.get("extracted_data")
     if data is not None:
-        st.sidebar.markdown("---")
-        st.sidebar.markdown("**Document Information**")
-        st.sidebar.write(f"File: {data.filename}")
-        st.sidebar.write(f"Type: {data.file_type}")
-        st.sidebar.write(f"Pages: {data.page_count}")
-        word_count = len(data.extracted_text.split()) if data.extracted_text else 0
-        st.sidebar.write(f"Words: {word_count:,}")
+        with st.sidebar.container(border=True):
+            st.markdown("**:material/description: Document overview**")
+            word_count = len(data.extracted_text.split()) if data.extracted_text else 0
+            st.caption(
+                f"**File:** {data.filename}\n\n"
+                f"**Type:** {data.file_type.upper()} · **Pages:** {data.page_count} · **Words:** {word_count:,}"
+            )
 
     # Gemini status in sidebar
     cfg = load_config()
-    st.sidebar.markdown("---")
-    st.sidebar.markdown("**Gemini Status**")
-    st.sidebar.write(f"Configured: {'Yes' if cfg.is_configured else 'No'}")
-    st.sidebar.write(f"Model: {cfg.model_id or 'not set'}")
+    with st.sidebar.container(border=True):
+        st.markdown("**:material/auto_awesome: Cloud AI (Gemini)**")
+        status_pill = (
+            ":green-badge[Configured]" if cfg.is_configured else ":gray-badge[Not configured]"
+        )
+        st.markdown(f"Status: {status_pill}")
+        st.caption(f"Model: `{cfg.model_id or 'not set'}`")
+
+    # Project & team card in sidebar
+    with st.sidebar.container(border=True):
+        st.markdown("**:material/group: Project & team**")
+        st.caption(
+            "**Topic:** Educational Content Summarization System\n\n"
+            "**Key concepts:** Extractive / Abstractive Summarization\n\n"
+            "**Team members:**\n"
+            "- Swapnil Santosh Akhade\n"
+            "- Bansude Sudarshan Sakharam"
+        )
 
     # ---- MAIN PAGE ----
-    st.title("Educational Content Summarization System")
+    st.title("Educational content summarization system", icon=":material/school:")
     st.caption(
-        "Academic NLP demonstration pipeline exposing every intermediate algorithm stage, "
-        "step-by-step phase progress, and verifiable mathematical outputs."
+        "Key concepts: Extractive (TextRank) & Abstractive (Gemini) Summarization · "
+        "Sequential 11-stage NLP pipeline exposing intermediate algorithm outputs and "
+        "verifiable mathematical representations."
     )
+
+    kpi_slot = st.empty()
+    _render_overview_kpis(kpi_slot, uploaded, cfg)
+
+    st.subheader("Document processing pipeline", icon=":material/account_tree:")
 
     display_fns = {
         1: _display_stage_1,
@@ -1404,15 +1729,15 @@ def main() -> None:
 
     for stage_idx in range(1, 12):
         stage_key = _STAGE_KEYS[stage_idx - 1]
-        stage_title = _STAGE_TITLES[stage_idx]
         with st.container(border=True):
             col_title, col_btn = st.columns([6, 1], vertical_alignment="center")
             title_placeholders[stage_idx] = col_title.empty()
             title_placeholders[stage_idx].markdown(
-                f"### {stage_title} {_badge(st.session_state[stage_key])}"
+                _stage_heading_md(stage_idx, st.session_state[stage_key])
             )
             if col_btn.button(
-                "▶ Run",
+                "Run",
+                icon=":material/play_arrow:",
                 key=f"btn_run_stage_{stage_idx}",
                 width="stretch",
                 disabled=(uploaded is None),
@@ -1443,7 +1768,7 @@ def main() -> None:
     # Handle Complete Pipeline Run progressively across the 11 stage containers
     if run_pipeline:
         if uploaded is None:
-            st.warning("Please upload a PDF or TXT document first.")
+            st.warning("Please upload a PDF or TXT document first.", icon=":material/warning:")
         else:
             file_content = uploaded.getvalue()
             filename = uploaded.name
@@ -1451,7 +1776,7 @@ def main() -> None:
             for idx in range(1, 12):
                 s_key = _STAGE_KEYS[idx - 1]
                 title_placeholders[idx].markdown(
-                    f"### {_STAGE_TITLES[idx]} {_badge(st.session_state[s_key])}"
+                    _stage_heading_md(idx, st.session_state[s_key])
                 )
 
             extracted_ok = _run_and_render_stage(1, file_content=file_content, filename=filename)
@@ -1460,7 +1785,11 @@ def main() -> None:
                     _run_and_render_stage(s_idx)
 
             st.session_state["pipeline_ran"] = True
-            st.success("Pipeline execution finished. All completed stage outputs are displayed above.")
+            _render_overview_kpis(kpi_slot, uploaded, cfg)
+            st.success(
+                "Pipeline execution finished. All completed stage outputs are displayed above.",
+                icon=":material/check_circle:",
+            )
 
     # Handle Individual Stage Run with prerequisite auto-check
     elif selected_individual_stage is not None and uploaded is not None:
@@ -1490,81 +1819,101 @@ def main() -> None:
             elif s_idx not in prereq_ran:
                 with body_slots[s_idx]:
                     display_fns[s_idx](show_header=False)
+        _render_overview_kpis(kpi_slot, uploaded, cfg)
     else:
         # Normal display pass
         for s_idx in range(1, 12):
             with body_slots[s_idx]:
                 display_fns[s_idx](show_header=False)
 
-
     # ---- Sentiment Analysis (separate section) ----
-    st.markdown("---")
-    st.header("Student Feedback Sentiment Analysis (VADER)")
+    st.subheader(
+        "Student feedback sentiment analysis (VADER)",
+        icon=":material/sentiment_satisfied:",
+    )
     st.caption(
         "This section is independent of the document processing pipeline. "
         "VADER sentiment analysis is evaluated strictly on student course feedback."
     )
 
-    with st.container(border=True):
-        single = st.text_area("Single feedback entry", height=80, key="feedback_single_input")
-        if st.button("Analyze Single Feedback", key="btn_single_feedback"):
-            if single.strip():
-                with st.status("Running VADER sentiment lexicon analysis...", expanded=False) as s_box:
-                    st.session_state["sentiment_single"] = analyze_feedback(single)
-                    s_box.update(label="VADER analysis complete", state="complete")
-            else:
-                st.warning("Enter feedback text.")
+    tab_single, tab_batch = st.tabs(
+        [":material/chat: Single feedback", ":material/dataset: Batch distribution"]
+    )
 
-        result = st.session_state.get("sentiment_single")
-        if result is not None:
-            st.write(f"**Feedback text:** {result.feedback_text}")
-            col0, col1, col2, col3, col4 = st.columns(5)
-            col0.metric("Sentiment label", result.sentiment_label)
-            col1.metric("Compound score", f"{result.compound_score:.4f}")
-            col2.metric("Positive score", f"{result.positive_score:.4f}")
-            col3.metric("Negative score", f"{result.negative_score:.4f}")
-            col4.metric("Neutral score", f"{result.neutral_score:.4f}")
+    with tab_single:
+        with st.container(border=True):
+            single = st.text_area("Single feedback entry", height=90, key="feedback_single_input")
+            if st.button(
+                "Analyze single feedback",
+                icon=":material/analytics:",
+                type="primary",
+                key="btn_single_feedback",
+            ):
+                if single.strip():
+                    with st.status("Running VADER sentiment lexicon analysis...", expanded=False) as s_box:
+                        st.session_state["sentiment_single"] = analyze_feedback(single)
+                        s_box.update(label="VADER analysis complete", state="complete")
+                else:
+                    st.warning("Enter feedback text.", icon=":material/warning:")
 
-    with st.container(border=True):
-        st.markdown("#### Batch Feedback Distribution")
-        batch_text = st.text_area(
-            "Multiple feedback entries (one per line)", height=100, key="feedback_batch_input"
-        )
-        if st.button("Analyze Batch Feedback", key="btn_batch_feedback"):
-            lines = [l.strip() for l in batch_text.splitlines() if l.strip()]
-            if lines:
-                with st.status(f"Analyzing {len(lines)} feedback entries with VADER...", expanded=False) as b_box:
-                    st.session_state["sentiment_batch"] = analyze_batch(lines)
-                    b_box.update(label=f"Analyzed {len(lines)} entries", state="complete")
-            else:
-                st.warning("Enter at least one feedback entry.")
+            result = st.session_state.get("sentiment_single")
+            if result is not None:
+                st.write(f"**Feedback text:** {result.feedback_text}")
+                col0, col1, col2, col3, col4 = st.columns(5)
+                col0.metric("Sentiment label", result.sentiment_label, border=True, height="stretch")
+                col1.metric("Compound score", f"{result.compound_score:.4f}", border=True, height="stretch")
+                col2.metric("Positive score", f"{result.positive_score:.4f}", border=True, height="stretch")
+                col3.metric("Negative score", f"{result.negative_score:.4f}", border=True, height="stretch")
+                col4.metric("Neutral score", f"{result.neutral_score:.4f}", border=True, height="stretch")
 
-        batch = st.session_state.get("sentiment_batch")
-        if batch is not None:
-            col1, col2, col3, col4 = st.columns(4)
-            col1.metric("Total entries", batch.total)
-            col2.metric("Positive", f"{batch.positive} ({batch.positive_pct:.1f}%)")
-            col3.metric("Negative", f"{batch.negative} ({batch.negative_pct:.1f}%)")
-            col4.metric("Neutral", f"{batch.neutral} ({batch.neutral_pct:.1f}%)")
-            with st.expander("Individual batch feedback scores", expanded=True):
-                df = pd.DataFrame(
-                    [
-                        {
-                            "Feedback": r.feedback_text,
-                            "Sentiment Label": r.sentiment_label,
-                            "Compound": round(r.compound_score, 4),
-                            "Positive": round(r.positive_score, 4),
-                            "Negative": round(r.negative_score, 4),
-                            "Neutral": round(r.neutral_score, 4),
-                        }
-                        for r in batch.results
-                    ]
-                )
-                st.dataframe(df, hide_index=True, alt="Batch feedback sentiment results")
+    with tab_batch:
+        with st.container(border=True):
+            batch_text = st.text_area(
+                "Multiple feedback entries (one per line)", height=110, key="feedback_batch_input"
+            )
+            if st.button(
+                "Analyze batch feedback",
+                icon=":material/analytics:",
+                type="primary",
+                key="btn_batch_feedback",
+            ):
+                lines = [line.strip() for line in batch_text.splitlines() if line.strip()]
+                if lines:
+                    with st.status(f"Analyzing {len(lines)} feedback entries with VADER...", expanded=False) as b_box:
+                        st.session_state["sentiment_batch"] = analyze_batch(lines)
+                        b_box.update(label=f"Analyzed {len(lines)} entries", state="complete")
+                else:
+                    st.warning("Enter at least one feedback entry.", icon=":material/warning:")
+
+            batch = st.session_state.get("sentiment_batch")
+            if batch is not None:
+                col1, col2, col3, col4 = st.columns(4)
+                col1.metric("Total entries", batch.total, border=True, height="stretch")
+                col2.metric("Positive", f"{batch.positive} ({batch.positive_pct:.1f}%)", border=True, height="stretch")
+                col3.metric("Negative", f"{batch.negative} ({batch.negative_pct:.1f}%)", border=True, height="stretch")
+                col4.metric("Neutral", f"{batch.neutral} ({batch.neutral_pct:.1f}%)", border=True, height="stretch")
+                with st.expander(
+                    "Individual batch feedback scores",
+                    expanded=True,
+                    icon=":material/table_chart:",
+                ):
+                    df = pd.DataFrame(
+                        [
+                            {
+                                "Feedback": r.feedback_text,
+                                "Sentiment Label": r.sentiment_label,
+                                "Compound": round(r.compound_score, 4),
+                                "Positive": round(r.positive_score, 4),
+                                "Negative": round(r.negative_score, 4),
+                                "Neutral": round(r.neutral_score, 4),
+                            }
+                            for r in batch.results
+                        ]
+                    )
+                    st.dataframe(df, hide_index=True, alt="Batch feedback sentiment results")
 
     # ---- Export ----
-    st.markdown("---")
-    st.header("Export Study Notes")
+    st.subheader("Export study notes", icon=":material/download:")
     tr = st.session_state.get("textrank_result")
     gemini = st.session_state.get("gemini_results")
     concepts_r = st.session_state.get("concepts_result")
@@ -1588,25 +1937,31 @@ def main() -> None:
     if ext_data is not None:
         source_name = ext_data.filename
 
-    if summary_text or concepts:
-        markdown = build_export_markdown(
-            source_name=source_name,
-            summary_type="short",
-            summary_text=summary_text,
-            method=method,
-            concepts=concepts,
-            definitions=definitions,
-        )
-        with st.expander("Export preview", expanded=False):
-            st.text_area("Markdown preview", markdown, height=200, key="export_preview")
-        st.download_button(
-            label="Download Study Notes (Markdown)",
-            data=markdown,
-            file_name="study_notes.md",
-            mime="text/markdown",
-        )
-    else:
-        st.info("Run the pipeline first to generate exportable study notes.")
+    with st.container(border=True):
+        if summary_text or concepts:
+            markdown = build_export_markdown(
+                source_name=source_name,
+                summary_type="short",
+                summary_text=summary_text,
+                method=method,
+                concepts=concepts,
+                definitions=definitions,
+            )
+            with st.expander("Export preview", expanded=False, icon=":material/article:"):
+                st.text_area("Markdown preview", markdown, height=200, key="export_preview")
+            st.download_button(
+                label="Download study notes (.md)",
+                data=markdown,
+                file_name="study_notes.md",
+                mime="text/markdown",
+                icon=":material/download:",
+                type="primary",
+            )
+        else:
+            st.info(
+                "Run the pipeline first to generate exportable study notes.",
+                icon=":material/info:",
+            )
 
 
 if __name__ == "__main__":

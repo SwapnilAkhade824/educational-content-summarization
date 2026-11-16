@@ -2,7 +2,7 @@
 
 ## Procedures
 
-- Summarization: ROUGE-1/2/L against author-written demonstration references.
+- Summarization: ROUGE-1/2/L against team-written demonstration references.
 - Sentiment: accuracy, precision, recall, F1, confusion matrix on manually labelled demo feedback.
 - Information extraction: precision/recall/F1 using exact normalized string matching on concepts and definitions.
 - Topic modelling: keyword inspection, document-topic distributions, reproducibility check, perplexity (not coherence).
@@ -13,7 +13,7 @@ Results are stored in `data/evaluation/reports/evaluation_report.json`, generate
 
 ## Limitations
 
-- Demo datasets are small and author-created.
+- Demo datasets are small and team-created.
 - ROUGE uses whitespace tokenization without stemming.
 - Concept matching uses exact normalized string match.
 - Perplexity does not measure semantic coherence.

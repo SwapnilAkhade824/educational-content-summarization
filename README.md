@@ -2,6 +2,11 @@
 
 NLP mini-project (Course 2311217L – NLP Lab) that turns educational documents (PDF/TXT) into structured study material through a transparent, stage-by-stage NLP pipeline, with Google Gemini for generative study notes.
 
+- **Topic:** Educational Content Summarization System
+- **Key Concepts:** Extractive / Abstractive Summarization
+- **Team Members:**
+  - **SWAPNIL SANTOSH AKHADE**
+  - **BANSUDE SUDARSHAN SAKHARAM**
 - **Live app:** _add your Streamlit Cloud URL here_
 - **Tech:** Python 3.12 · Streamlit · PyMuPDF · NLTK · spaCy · scikit-learn · networkx · Google Gemini (`google-genai`)
 
@@ -93,7 +98,9 @@ educational_content_summarization/
 ├── docs/                      # architecture, algorithms, dataset, demo script, poster content
 ├── scripts/                   # optional Gemini connection check
 ├── screenshots/               # application output screenshots
-├── certificate/               # AWS NLP Lab completion certificate (PDF)
+├── certificate/               # Team AWS NLP Lab completion certificates (PDF)
+│   ├── Swapnil_Santosh_Akhade_Certificate.pdf
+│   └── Bansude_Sudarshan_Sakharam_Certificate.pdf  # pending upload
 └── .github/workflows/ci.yml   # automated tests on every push
 ```
 
@@ -101,7 +108,7 @@ More detail: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/ALGORITHMS.md](
 
 ## 6. Dataset
 
-A sample author-created 7-page educational PDF is included at `data/raw/educational_content_nlp_test_document.pdf`, plus small demo evaluation sets in `data/evaluation/`. Any PDF/TXT can be uploaded at runtime. See [docs/DATASET.md](docs/DATASET.md) for source, description and preprocessing details.
+A sample team-created 7-page educational PDF is included at `data/raw/educational_content_nlp_test_document.pdf`, plus small demo evaluation sets in `data/evaluation/`. Any PDF/TXT can be uploaded at runtime. See [docs/DATASET.md](docs/DATASET.md) for source, description and preprocessing details.
 
 ## 7. Installation
 
