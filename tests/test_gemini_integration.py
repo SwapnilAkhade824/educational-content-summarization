@@ -32,7 +32,7 @@ from utils.config import GeminiConfig, load_config
 def _config(**overrides: Any) -> GeminiConfig:
     values = {
         "api_key": "test-key",
-        "model_id": "gemini-3.8-flash",
+        "model_id": "gemini-3.5-flash-lite",
         "max_output_tokens": 256,
         "temperature": 0.2,
         "timeout_seconds": 120,
@@ -86,14 +86,14 @@ def test_missing_api_key_disables_gemini(tmp_path, monkeypatch: pytest.MonkeyPat
         monkeypatch.delenv(key, raising=False)
     cfg = load_config()
     assert cfg.is_configured is False
-    assert cfg.model_id == "gemini-3.8-flash"
+    assert cfg.model_id == "gemini-3.5-flash-lite"
     with pytest.raises(LLMClientConfigError):
         create_client(cfg)
 
 
 def test_valid_configuration_is_parsed(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("GEMINI_API_KEY", "abc123")
-    monkeypatch.setenv("GEMINI_MODEL_ID", "gemini-3.8-flash")
+    monkeypatch.setenv("GEMINI_MODEL_ID", "gemini-3.5-flash-lite")
     monkeypatch.setenv("GEMINI_THINKING_LEVEL", "low")
     monkeypatch.setenv("GEMINI_MAX_OUTPUT_TOKENS", "4096")
     monkeypatch.setenv("GEMINI_TEMPERATURE", "0.35")
@@ -101,7 +101,7 @@ def test_valid_configuration_is_parsed(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("GEMINI_MAX_SINGLE_REQUEST_TOKENS", "12000")
     cfg = load_config()
     assert cfg.api_key == "abc123"
-    assert cfg.model_id == "gemini-3.8-flash"
+    assert cfg.model_id == "gemini-3.5-flash-lite"
     assert cfg.thinking_level == "low"
     assert cfg.max_output_tokens == 4096
     assert cfg.temperature == 0.35
@@ -122,8 +122,8 @@ def test_invalid_configuration_values_raise(monkeypatch: pytest.MonkeyPatch) -> 
 
 
 def test_model_id_loads_from_environment(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("GEMINI_MODEL_ID", "gemini-3.8-flash")
-    assert load_config().model_id == "gemini-3.8-flash"
+    monkeypatch.setenv("GEMINI_MODEL_ID", "gemini-3.5-flash-lite")
+    assert load_config().model_id == "gemini-3.5-flash-lite"
 
     monkeypatch.setenv("GEMINI_MODEL_ID", "gemini-3.8-pro")
     assert load_config().model_id == "gemini-3.8-pro"
@@ -151,10 +151,10 @@ def test_mocked_successful_generation_passes_sdk_parameters() -> None:
     client = FakeGeminiClient(text="Structured output")
     result = generate_summary("Educational content.", summary_type="short", config=_config(), client=client)
     assert result.summary_text == "Structured output"
-    assert result.model_id == "gemini-3.8-flash"
+    assert result.model_id == "gemini-3.5-flash-lite"
     assert len(client.calls) == 1
     call = client.calls[0]
-    assert call["model"] == "gemini-3.8-flash"
+    assert call["model"] == "gemini-3.5-flash-lite"
     config = call["config"]
     assert config.temperature == 0.2
     assert config.max_output_tokens == 256
@@ -356,7 +356,7 @@ def test_chunk_resumability_skips_completed_chunks() -> None:
     cache_key = list(cache.keys())[0] if cache else None
     if not cache_key:
         import hashlib
-        cache_key = hashlib.sha256(f"{text}::short::gemini-3.8-flash::{_config().model_id}".encode("utf-8")).hexdigest()
+        cache_key = hashlib.sha256(f"{text}::short::gemini-3.5-flash-lite::{_config().model_id}".encode("utf-8")).hexdigest()
     cache[cache_key] = {1: "Pre-existing chunk 1 summary"}
 
     # Resuming with succeeding client: chunk 1 should not be called again

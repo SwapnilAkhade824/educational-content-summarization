@@ -133,6 +133,42 @@ def _status_badge(status: str) -> str:
     return _STATUS_BADGES.get(status, ":gray-badge[:material/schedule: Not started]")
 
 
+def _is_quota_error(message: str) -> bool:
+    """Return True when a Gemini error message indicates an HTTP 429 or quota limit."""
+    lower = (message or "").lower()
+    return any(
+        token in lower
+        for token in (
+            "429",
+            "quota",
+            "rate limit",
+            "rate limited",
+            "resource_exhausted",
+            "resource exhausted",
+        )
+    )
+
+
+def _render_gemini_error(message: str, context: str = "Gemini summarization") -> None:
+    """Display a calm inline notice for Gemini failures without exposing tracebacks."""
+    if _is_quota_error(message):
+        st.warning(
+            f"**Google Gemini quota reached during {context}.** The shared cloud API key has "
+            "temporarily hit its rate or quota limit. **Stages 1–10 (TextRank, TF-IDF, NER & "
+            "Definitions, LDA), VADER Sentiment Analysis, and Markdown export (`study_notes.md`) "
+            "still work normally.** Please try again in a moment.",
+            icon=":material/hourglass_top:",
+        )
+    else:
+        heading = f"{context[0].upper()}{context[1:]}" if context else "Gemini cloud AI"
+        st.warning(
+            f"**{heading} is temporarily unavailable:** {message}\n\n"
+            "All local NLP stages (Stages 1–10), VADER Sentiment Analysis, and Markdown export "
+            "still work normally.",
+            icon=":material/warning:",
+        )
+
+
 # ---------------------------------------------------------------------------
 # Session state management & document-change invalidation
 # ---------------------------------------------------------------------------
@@ -1405,8 +1441,14 @@ def _display_stage_10(show_header: bool = True) -> None:
                     st.session_state["lda_interpretations"] = interps
                     status_box.update(label="Cloud-AI topic interpretation complete", state="complete", expanded=False)
                 except Exception as exc:
-                    status_box.update(label="Cloud-AI topic interpretation failed", state="error")
-                    st.error(f"Topic interpretation failed: {exc}")
+                    err_text = str(exc)
+                    status_label = (
+                        "Cloud-AI topic interpretation paused (quota limit)"
+                        if _is_quota_error(err_text)
+                        else "Cloud-AI topic interpretation unavailable"
+                    )
+                    status_box.update(label=status_label, state="error", expanded=False)
+                    _render_gemini_error(err_text, context="LDA topic interpretation")
 
     interps = st.session_state.get("lda_interpretations")
     if interps:
@@ -1482,7 +1524,7 @@ def _display_stage_11(show_header: bool = True) -> None:
 
     error_msg = st.session_state.get("gemini_error")
     if error_msg:
-        st.error(f"Gemini error: {error_msg}", icon=":material/error:")
+        _render_gemini_error(error_msg, context="Stage 11 study note generation")
         if st.button(
             "Retry Gemini summarization (resume uncompleted phases/chunks)",
             key="retry_gemini_btn",
@@ -1695,16 +1737,30 @@ def main() -> None:
         )
 
     # ---- MAIN PAGE ----
-    st.title("Educational content summarization system", icon=":material/school:")
-    st.caption(
-        "Key concepts: Extractive (TextRank) & Abstractive (Gemini) Summarization · "
-        "Sequential 11-stage NLP pipeline exposing intermediate algorithm outputs and "
-        "verifiable mathematical representations."
+    with st.container():
+        st.title("Educational Content Summarization System", icon=":material/school:")
+        st.markdown(
+            "Transparent extractive (**TextRank**) and abstractive (**Google Gemini**) "
+            "summarization exposing every intermediate linguistic and mathematical NLP stage."
+        )
+        st.markdown(
+            ":blue-badge[:material/account_tree: 11-Stage Glass-Box Pipeline] "
+            ":green-badge[:material/offline_bolt: Stages 1–10 + VADER: Local & Unlimited] "
+            ":violet-badge[:material/auto_awesome: Stage 11: Google Gemini Cloud AI]"
+        )
+
+    st.info(
+        "**Heads up:** Cloud features powered by **Google Gemini** (Stage 11 study notes & "
+        "optional AI topic explanations) use a shared API key and may occasionally hit a quota "
+        "limit. **You can still run all other steps (Stages 1–10 & VADER Sentiment) with zero "
+        "interruption.**",
+        icon=":material/info:",
     )
 
     kpi_slot = st.empty()
     _render_overview_kpis(kpi_slot, uploaded, cfg)
 
+    st.divider()
     st.subheader("Document processing pipeline", icon=":material/account_tree:")
 
     display_fns = {

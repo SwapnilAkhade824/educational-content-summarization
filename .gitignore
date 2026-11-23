@@ -35,6 +35,7 @@ data/processed/*
 !data/processed/.gitkeep
 *.pdf
 *.txt.bak
+*.log
 
 # IDE / OS
 .vscode/

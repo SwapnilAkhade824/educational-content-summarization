@@ -8,15 +8,7 @@ from typing import Any, Dict, List
 import httpx
 import pytest
 
-from openai import (
-    APIConnectionError,
-    APITimeoutError,
-    AuthenticationError,
-    BadRequestError,
-    InternalServerError,
-    NotFoundError,
-    RateLimitError,
-)
+from google.genai import errors as genai_errors
 from summarization.llm_summarizer import (
     LLMConfigError,
     LLMError,
@@ -147,8 +139,18 @@ def test_chunk_failure_raises() -> None:
         generate_summary(text, config=CONFIGURED, client=client, chunk_size=50, overlap=10)
 
 
-def _response(status_code: int) -> httpx.Response:
-    return httpx.Response(status_code, request=httpx.Request("POST", "http://example.test"))
+def _genai_client_error(status_code: int, message: str, status: str) -> genai_errors.ClientError:
+    return genai_errors.ClientError(
+        status_code,
+        {"error": {"code": status_code, "message": message, "status": status}},
+    )
+
+
+def _genai_server_error(status_code: int, message: str, status: str) -> genai_errors.ServerError:
+    return genai_errors.ServerError(
+        status_code,
+        {"error": {"code": status_code, "message": message, "status": status}},
+    )
 
 
 def test_client_error_mapping() -> None:
@@ -157,7 +159,7 @@ def test_client_error_mapping() -> None:
             self.chat = SimpleNamespace(
                 completions=SimpleNamespace(
                     create=lambda **kwargs: (_ for _ in ()).throw(
-                        AuthenticationError("no access", response=_response(401), body=None)
+                        _genai_client_error(401, "no access", "UNAUTHENTICATED")
                     )
                 )
             )
@@ -181,7 +183,7 @@ def test_network_error_mapping() -> None:
         def __init__(self) -> None:
             self.chat = SimpleNamespace(
                 completions=SimpleNamespace(
-                    create=lambda **kwargs: (_ for _ in ()).throw(APIConnectionError(request=httpx.Request("POST", "http://example.test")))
+                    create=lambda **kwargs: (_ for _ in ()).throw(httpx.ConnectError("connection failed"))
                 )
             )
 
@@ -196,7 +198,7 @@ def test_rate_limit_mapping() -> None:
             self.chat = SimpleNamespace(
                 completions=SimpleNamespace(
                     create=lambda **kwargs: (_ for _ in ()).throw(
-                        RateLimitError("slow down", response=_response(429), body=None)
+                        _genai_client_error(429, "slow down", "RESOURCE_EXHAUSTED")
                     )
                 )
             )
@@ -211,7 +213,7 @@ def test_timeout_mapping() -> None:
         def __init__(self) -> None:
             self.chat = SimpleNamespace(
                 completions=SimpleNamespace(
-                    create=lambda **kwargs: (_ for _ in ()).throw(APITimeoutError("timed out"))
+                    create=lambda **kwargs: (_ for _ in ()).throw(httpx.TimeoutException("timed out"))
                 )
             )
 
@@ -226,7 +228,7 @@ def test_invalid_model_mapping() -> None:
             self.chat = SimpleNamespace(
                 completions=SimpleNamespace(
                     create=lambda **kwargs: (_ for _ in ()).throw(
-                        NotFoundError("missing model", response=_response(404), body=None)
+                        _genai_client_error(404, "missing model not found", "NOT_FOUND")
                     )
                 )
             )
@@ -242,7 +244,7 @@ def test_server_error_mapping() -> None:
             self.chat = SimpleNamespace(
                 completions=SimpleNamespace(
                     create=lambda **kwargs: (_ for _ in ()).throw(
-                        InternalServerError("server down", response=_response(500), body=None)
+                        _genai_server_error(500, "server down", "INTERNAL")
                     )
                 )
             )
@@ -258,7 +260,7 @@ def test_token_limit_mapping() -> None:
             self.chat = SimpleNamespace(
                 completions=SimpleNamespace(
                     create=lambda **kwargs: (_ for _ in ()).throw(
-                        BadRequestError("context length exceeded", response=_response(400), body=None)
+                        _genai_client_error(400, "context length exceeded", "INVALID_ARGUMENT")
                     )
                 )
             )

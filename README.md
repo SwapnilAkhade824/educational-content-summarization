@@ -7,8 +7,9 @@ NLP mini-project (Course 2311217L – NLP Lab) that turns educational documents 
 - **Team Members:**
   - **SWAPNIL SANTOSH AKHADE**
   - **BANSUDE SUDARSHAN SAKHARAM**
-- **Live app:** _add your Streamlit Cloud URL here_
-- **Tech:** Python 3.12 · Streamlit · PyMuPDF · NLTK · spaCy · scikit-learn · networkx · Google Gemini (`google-genai`)
+- **Mentor:** Prof. Shruti Gadewar
+- **Live app:** https://educational-content-summarization-s6qo8hq4vemjuucuwrxghs.streamlit.app/
+- **Tech:** Python 3.12 · Streamlit · PyMuPDF · NLTK · spaCy · scikit-learn · networkx · Google Gemini (`google-genai`, default `gemini-3.5-flash-lite`)
 
 ---
 
@@ -50,7 +51,7 @@ Students and educators deal with long educational documents. Manually summarizin
 | 8 | TextRank Summarization | TF-IDF + cosine similarity + PageRank (networkx) | similarity matrix, graph, scores, ranked & selected sentences, compression ratio |
 | 9 | Information Extraction | spaCy `en_core_web_sm` NER, noun chunks, regex definition patterns | entities with labels & char offsets, keyphrases, definitions |
 | 10 | LDA Topic Modelling | scikit-learn `CountVectorizer` + `LatentDirichletAllocation`; optional Gemini interpretation | chunks, BoW matrix, topic keywords/weights, document-topic distribution |
-| 11 | Gemini Summarization | Google Gemini via `google-genai`, 5 versioned prompts, chunking, retries | short/detailed summary, bullet notes, definitions, revision notes |
+| 11 | Gemini Summarization | Google Gemini (`gemini-3.5-flash-lite`) via `google-genai`, 5 versioned prompts, chunking, retries | short/detailed summary, bullet notes, definitions, revision notes |
 | – | Student Feedback Sentiment | NLTK VADER | pos/neg/neu/compound scores, label, batch distribution |
 
 Every stage has its own **▶ Run** button (missing prerequisites run automatically) and live progress feedback; **Run Complete Pipeline** runs all stages in order.
@@ -77,6 +78,8 @@ flowchart LR
 ```text
 educational_content_summarization/
 ├── app.py                     # Streamlit UI (calls src/ modules only)
+├── NLP_Pipeline_Showcase.ipynb# Executed step-by-step pipeline & benchmark showcase
+├── Educational_Content_Summarization_Pipeline.ipynb
 ├── requirements.txt
 ├── pyproject.toml
 ├── .env.example               # template; real .env is git-ignored
@@ -88,14 +91,14 @@ educational_content_summarization/
 │   ├── information_extraction/# NER, keyphrases, definitions
 │   ├── topic_modeling/        # LDA
 │   ├── sentiment/             # VADER
-│   ├── evaluation/            # ROUGE, classification metrics, concept F1
+│   ├── evaluation/            # ROUGE, classification metrics, concept F1, benchmark runner
 │   ├── ui/                    # export helpers
 │   └── utils/                 # configuration, logging
-├── tests/                     # pytest suite
+├── tests/                     # pytest suite (204 tests)
 ├── data/
-│   ├── raw/                   # sample educational PDF
-│   └── evaluation/            # demo datasets, templates, report
-├── docs/                      # architecture, algorithms, dataset, demo script, poster content
+│   ├── raw/                   # canonical 7-page educational PDF
+│   └── evaluation/            # demo sets, benchmark suite, templates & reports
+├── docs/                      # architecture, algorithms, dataset, demo script, poster & handover notes
 ├── scripts/                   # optional Gemini connection check
 ├── screenshots/               # application output screenshots
 ├── certificate/               # Team AWS NLP Lab completion certificates (PDF)
@@ -108,7 +111,7 @@ More detail: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/ALGORITHMS.md](
 
 ## 6. Dataset
 
-A sample team-created 7-page educational PDF is included at `data/raw/educational_content_nlp_test_document.pdf`, plus small demo evaluation sets in `data/evaluation/`. Any PDF/TXT can be uploaded at runtime. See [docs/DATASET.md](docs/DATASET.md) for source, description and preprocessing details.
+A canonical team-created 7-page educational PDF is included at `data/raw/educational_content_nlp_test_document.pdf`, along with demo evaluation sets (`data/evaluation/demo/`) and an expanded academic benchmark suite (`data/evaluation/benchmark/`, report in `data/evaluation/reports/benchmark_report.json`). Any PDF/TXT can be uploaded at runtime. See [docs/DATASET.md](docs/DATASET.md) for source, description and preprocessing details.
 
 ## 7. Installation
 
@@ -140,7 +143,7 @@ streamlit run app.py
 python -m pytest -q
 ```
 
-202 tests cover extraction, preprocessing, TF-IDF, TextRank, information extraction, LDA, VADER, Gemini integration (mocked), prompts, configuration and the app pipeline. GitHub Actions runs them on every push.
+204 tests cover extraction, preprocessing, TF-IDF, TextRank, information extraction, LDA, VADER, Gemini integration (mocked), prompts, configuration, evaluation benchmarks, and the app pipeline. GitHub Actions runs them on every push.
 
 ## 10. Deployment
 

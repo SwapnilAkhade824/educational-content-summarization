@@ -1,0 +1,86 @@
+{
+  "dataset_id": "academic_concepts_benchmark_v1",
+  "description": "10 educational paragraphs across AI, NLP, Databases, OS, and Networks with human-annotated ground-truth named entities and formal definitions.",
+  "samples": [
+    {
+      "id": "con_01",
+      "text": "Artificial Intelligence is defined as the branch of computer science focused on building systems capable of human-like reasoning. Alan Turing proposed the Turing Test in 1950 at the University of Manchester.",
+      "reference_entities": ["Alan Turing", "the Turing Test", "1950", "the University of Manchester"],
+      "reference_definitions": [
+        {"concept": "Artificial Intelligence", "definition": "the branch of computer science focused on building systems capable of human-like reasoning"}
+      ]
+    },
+    {
+      "id": "con_02",
+      "text": "Information Theory refers to the mathematical study of quantifying, storing, and communicating digital data. Claude Shannon published its foundational paper at Bell Labs in 1948.",
+      "reference_entities": ["Claude Shannon", "Bell Labs", "1948"],
+      "reference_definitions": [
+        {"concept": "Information Theory", "definition": "the mathematical study of quantifying, storing, and communicating digital data"}
+      ]
+    },
+    {
+      "id": "con_03",
+      "text": "Supervised learning means training a predictive function from labeled input-output examples. Researchers at Stanford University and Google widely apply supervised models to speech and vision tasks.",
+      "reference_entities": ["Stanford University", "Google"],
+      "reference_definitions": [
+        {"concept": "Supervised learning", "definition": "training a predictive function from labeled input-output examples"}
+      ]
+    },
+    {
+      "id": "con_04",
+      "text": "Backpropagation is known as the standard algorithm for computing neural network gradients via the chain rule. Geoffrey Hinton and colleagues at the University of Toronto popularized deep representation learning.",
+      "reference_entities": ["Geoffrey Hinton", "the University of Toronto"],
+      "reference_definitions": [
+        {"concept": "Backpropagation", "definition": "the standard algorithm for computing neural network gradients via the chain rule"}
+      ]
+    },
+    {
+      "id": "con_05",
+      "text": "Lemmatization is the process of reducing inflected words to their canonical dictionary base form. The WordNet lexical database was developed at Princeton University starting in 1985.",
+      "reference_entities": ["WordNet", "Princeton University", "1985"],
+      "reference_definitions": [
+        {"concept": "Lemmatization", "definition": "the process of reducing inflected words to their canonical dictionary base form"}
+      ]
+    },
+    {
+      "id": "con_06",
+      "text": "The relational model is defined as a database abstraction organizing records into mathematical relations or tables. Edgar Codd introduced this framework while working at IBM in 1970.",
+      "reference_entities": ["Edgar Codd", "IBM", "1970"],
+      "reference_definitions": [
+        {"concept": "relational model", "definition": "a database abstraction organizing records into mathematical relations or tables"}
+      ]
+    },
+    {
+      "id": "con_07",
+      "text": "Virtual memory refers to an operating system mechanism that maps isolated virtual addresses onto physical RAM frames. Multics and Unix pioneered early virtual memory designs at MIT in the 1960s.",
+      "reference_entities": ["Multics", "Unix", "MIT", "the 1960s"],
+      "reference_definitions": [
+        {"concept": "Virtual memory", "definition": "an operating system mechanism that maps isolated virtual addresses onto physical RAM frames"}
+      ]
+    },
+    {
+      "id": "con_08",
+      "text": "Hypertext Transfer Protocol is an application-layer standard for transmitting web resources across networks. Tim Berners-Lee created the World Wide Web at CERN in 1989.",
+      "reference_entities": ["Tim Berners-Lee", "CERN", "1989"],
+      "reference_definitions": [
+        {"concept": "Hypertext Transfer Protocol", "definition": "an application-layer standard for transmitting web resources across networks"}
+      ]
+    },
+    {
+      "id": "con_09",
+      "text": "Tokenization represents the segmentation of raw character streams into discrete sentences or words. Modern open-source pipelines in Python rely on libraries maintained by Explosion and Microsoft.",
+      "reference_entities": ["Python", "Explosion", "Microsoft"],
+      "reference_definitions": [
+        {"concept": "Tokenization", "definition": "the segmentation of raw character streams into discrete sentences or words"}
+      ]
+    },
+    {
+      "id": "con_10",
+      "text": "Public-key cryptography means using mathematically linked public and private keys for secure communication. Whitfield Diffie and Martin Hellman published key exchange principles in 1976, followed by RSA at MIT in 1977.",
+      "reference_entities": ["Whitfield Diffie", "Martin Hellman", "1976", "RSA", "MIT", "1977"],
+      "reference_definitions": [
+        {"concept": "Public-key cryptography", "definition": "using mathematically linked public and private keys for secure communication"}
+      ]
+    }
+  ]
+}

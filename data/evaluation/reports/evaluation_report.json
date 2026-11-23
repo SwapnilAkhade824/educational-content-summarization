@@ -1,6 +1,7 @@
 {
-  "evaluation_date": "2026-11-15T18:39:17.552628+00:00",
+  "evaluation_date": "2026-11-23T14:38:02.313016+00:00",
   "project": "Educational Content Summarization System",
+  "suite": "demo",
   "sample_counts": {
     "summarization": 1,
     "sentiment": 10,
@@ -12,11 +13,68 @@
       "dataset_id": "demo_summarization_v1",
       "description": "DEMONSTRATION DATA ONLY. Reference summary is author-written for evaluation demonstration, not a published ground truth.",
       "sample_count": 1,
+      "textrank_macro_rouge": {
+        "rouge_1": {
+          "precision": 0.3333333333333333,
+          "recall": 0.5882352941176471,
+          "f1": 0.42553191489361697
+        },
+        "rouge_2": {
+          "precision": 0.1724137931034483,
+          "recall": 0.3125,
+          "f1": 0.22222222222222224
+        },
+        "rouge_l": {
+          "precision": 0.3,
+          "recall": 0.5294117647058824,
+          "f1": 0.3829787234042553
+        }
+      },
+      "textrank_avg_latency_seconds": 0.0054,
+      "llm_model_id": "gemini-3.5-flash-lite",
+      "llm_evaluated_count": 1,
+      "llm_macro_rouge": {
+        "rouge_1": {
+          "precision": 0.25,
+          "recall": 0.6470588235294118,
+          "f1": 0.36065573770491804
+        },
+        "rouge_2": {
+          "precision": 0.11627906976744186,
+          "recall": 0.3125,
+          "f1": 0.16949152542372883
+        },
+        "rouge_l": {
+          "precision": 0.22727272727272727,
+          "recall": 0.5882352941176471,
+          "f1": 0.32786885245901637
+        }
+      },
+      "llm_full_output_macro_rouge": {
+        "rouge_1": {
+          "precision": 0.08163265306122448,
+          "recall": 0.9411764705882353,
+          "f1": 0.15023474178403753
+        },
+        "rouge_2": {
+          "precision": 0.05641025641025641,
+          "recall": 0.6875,
+          "f1": 0.10426540284360189
+        },
+        "rouge_l": {
+          "precision": 0.0663265306122449,
+          "recall": 0.7647058823529411,
+          "f1": 0.12206572769953053
+        }
+      },
+      "llm_avg_latency_seconds": 8.8548,
       "samples": [
         {
           "id": "demo_1",
+          "domain": null,
           "reference_summary": "Machine learning enables computers to learn from data. Data preprocessing, model training, and evaluation are key steps.",
           "textrank_summary": "Machine learning is a subset of artificial intelligence that enables computers to learn from data without explicit programming. Data preprocessing is an important step that cleans and transforms raw data.",
+          "textrank_latency_seconds": 0.0054,
           "textrank_rouge": {
             "rouge_1": {
               "precision": 0.3333333333333333,
@@ -35,8 +93,45 @@
             }
           },
           "llm_summary": {
-            "status": "failed",
-            "reason": "Unexpected LLM error: [Errno 11001] getaddrinfo failed"
+            "status": "executed",
+            "model_id": "gemini-3.5-flash-lite",
+            "main_summary": "Machine learning is a subset of artificial intelligence that allows computers to learn from data without explicit programming. The process involves data preprocessing to clean and transform raw data, model training using algorithms to find patterns, and evaluation to measure performance on unseen data.",
+            "summary": "## Main Summary\nMachine learning is a subset of artificial intelligence that allows computers to learn from data without explicit programming. The process involves data preprocessing to clean and transform raw data, model training using algorithms to find patterns, and evaluation to measure performance on unseen data.\n\n## Key Concepts\n- Machine learning processes\n- Data preparation and cleaning\n- Pattern recognition through algorithms\n- Model performance measurement\n\n## Important Definitions\n- Machine learning: A subset of artificial intelligence that enables computers to learn from data without explicit programming.\n- Data preprocessing: An important step that cleans and transforms raw data.\n- Model training: The process that uses algorithms to find patterns.\n- Evaluation: The process that measures how well the model performs on unseen data.\n\n## Important Points\n- Machine learning operates without explicit programming by learning from data.\n- Raw data must undergo preprocessing to be cleaned and transformed.\n- Algorithms are used during model training to identify patterns.\n- Model performance must be evaluated using unseen data.\n\n## Revision Notes\n- Remember the sequential workflow: data preprocessing, model training, and evaluation.\n- Machine learning is defined specifically as a subset of artificial intelligence.",
+            "latency_seconds": 8.8548,
+            "rouge": {
+              "rouge_1": {
+                "precision": 0.25,
+                "recall": 0.6470588235294118,
+                "f1": 0.36065573770491804
+              },
+              "rouge_2": {
+                "precision": 0.11627906976744186,
+                "recall": 0.3125,
+                "f1": 0.16949152542372883
+              },
+              "rouge_l": {
+                "precision": 0.22727272727272727,
+                "recall": 0.5882352941176471,
+                "f1": 0.32786885245901637
+              }
+            },
+            "full_output_rouge": {
+              "rouge_1": {
+                "precision": 0.08163265306122448,
+                "recall": 0.9411764705882353,
+                "f1": 0.15023474178403753
+              },
+              "rouge_2": {
+                "precision": 0.05641025641025641,
+                "recall": 0.6875,
+                "f1": 0.10426540284360189
+              },
+              "rouge_l": {
+                "precision": 0.0663265306122449,
+                "recall": 0.7647058823529411,
+                "f1": 0.12206572769953053
+              }
+            }
           }
         }
       ]
@@ -45,6 +140,7 @@
       "dataset_id": "demo_sentiment_v1",
       "description": "DEMONSTRATION DATA ONLY. Labels are manually assigned for evaluation demonstration.",
       "sample_count": 10,
+      "confusion_matrix_total": 10,
       "metrics": {
         "accuracy": 0.9,
         "macro_precision": 0.9166666666666666,
@@ -98,67 +194,78 @@
           "id": "s1",
           "feedback": "This course is excellent and very helpful.",
           "predicted": "Positive",
-          "reference": "Positive"
+          "reference": "Positive",
+          "compound": 0.7778
         },
         {
           "id": "s2",
           "feedback": "I loved the clear explanations.",
           "predicted": "Positive",
-          "reference": "Positive"
+          "reference": "Positive",
+          "compound": 0.7579
         },
         {
           "id": "s3",
           "feedback": "Great examples and well organized material.",
           "predicted": "Positive",
-          "reference": "Positive"
+          "reference": "Positive",
+          "compound": 0.7351
         },
         {
           "id": "s4",
           "feedback": "The content is terrible and confusing.",
           "predicted": "Negative",
-          "reference": "Negative"
+          "reference": "Negative",
+          "compound": -0.6124
         },
         {
           "id": "s5",
           "feedback": "I hated the unclear explanations.",
           "predicted": "Negative",
-          "reference": "Negative"
+          "reference": "Negative",
+          "compound": -0.7351
         },
         {
           "id": "s6",
           "feedback": "Worst course I have taken.",
           "predicted": "Negative",
-          "reference": "Negative"
+          "reference": "Negative",
+          "compound": -0.6249
         },
         {
           "id": "s7",
           "feedback": "The chapter covers several topics.",
           "predicted": "Neutral",
-          "reference": "Neutral"
+          "reference": "Neutral",
+          "compound": 0.0
         },
         {
           "id": "s8",
           "feedback": "It includes diagrams and text.",
           "predicted": "Neutral",
-          "reference": "Neutral"
+          "reference": "Neutral",
+          "compound": 0.0
         },
         {
           "id": "s9",
           "feedback": "The module has five sections.",
           "predicted": "Neutral",
-          "reference": "Neutral"
+          "reference": "Neutral",
+          "compound": 0.0
         },
         {
           "id": "s10",
           "feedback": "The content is acceptable and covers the basics.",
           "predicted": "Positive",
-          "reference": "Neutral"
+          "reference": "Neutral",
+          "compound": 0.3182
         }
       ]
     },
     "concepts": {
       "dataset_id": "demo_concepts_v1",
       "description": "DEMONSTRATION DATA ONLY. Annotations are author-created for evaluation demonstration.",
+      "sample_count": 1,
       "entity_metrics": {
         "precision": 0.75,
         "recall": 0.75,
@@ -208,6 +315,12 @@
     "topics": {
       "dataset_id": "demo_topics_v1",
       "description": "DEMONSTRATION DATA ONLY. Topics discovered from a small demo corpus.",
+      "document_count": 4,
+      "n_topics": 3,
+      "bow_matrix_shape": [
+        4,
+        27
+      ],
       "topics": [
         {
           "topic_id": 0,
@@ -295,6 +408,7 @@
         {
           "chunk_id": 0,
           "source_index": 0,
+          "domain": null,
           "dominant_topic": 0,
           "topic_distribution": [
             0.9162602968337571,
@@ -305,6 +419,7 @@
         {
           "chunk_id": 1,
           "source_index": 1,
+          "domain": null,
           "dominant_topic": 0,
           "topic_distribution": [
             0.932729097674742,
@@ -315,6 +430,7 @@
         {
           "chunk_id": 2,
           "source_index": 2,
+          "domain": null,
           "dominant_topic": 1,
           "topic_distribution": [
             0.03802389310662041,
@@ -325,6 +441,7 @@
         {
           "chunk_id": 3,
           "source_index": 3,
+          "domain": null,
           "dominant_topic": 2,
           "topic_distribution": [
             0.03452503952866419,
@@ -335,19 +452,19 @@
       ],
       "vocabulary_size": 27,
       "perplexity": 52.29664229634727,
+      "cluster_purity": null,
       "reproducible": true,
       "warnings": [],
       "note": "Perplexity does not establish human interpretability or semantic coherence."
     }
   },
   "missing_evaluation_data": [
-    "LLM evaluation is skipped unless an OpenAI-compatible endpoint is configured.",
-    "Large-scale human-annotated datasets are not included; demo data is small."
+    "LLM evaluation is skipped unless GEMINI_API_KEY is configured."
   ],
   "limitations": [
-    "Demo datasets are small and author-created.",
+    "Evaluation datasets are curated academic benchmarks rather than published third-party corpora.",
     "ROUGE uses whitespace tokenization and does not use stemming.",
-    "Concept matching uses exact normalized string match.",
+    "Concept matching uses case-insensitive exact normalized string match.",
     "Perplexity is not semantic coherence."
   ]
 }

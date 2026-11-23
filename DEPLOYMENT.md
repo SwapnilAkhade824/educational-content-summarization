@@ -38,7 +38,7 @@ git ls-files | Select-String ".env$"   # must print nothing
 
      ```toml
      GEMINI_API_KEY = "your-google-ai-studio-key"
-     GEMINI_MODEL_ID = "gemini-3.8-flash"
+     GEMINI_MODEL_ID = "gemini-3.5-flash-lite"
      GEMINI_THINKING_LEVEL = "low"
      GEMINI_MAX_OUTPUT_TOKENS = "8192"
      GEMINI_TEMPERATURE = "0.2"
@@ -55,7 +55,7 @@ Every `git push` to `main` redeploys the app automatically.
 | Variable | Default | Description |
 |---|---|---|
 | `GEMINI_API_KEY` | _(empty)_ | Google AI Studio key. Without it, Stages 1–10 and VADER still work; Stage 11 is disabled. |
-| `GEMINI_MODEL_ID` | `gemini-3.8-flash` | Gemini model identifier. |
+| `GEMINI_MODEL_ID` | `gemini-3.5-flash-lite` | Gemini model identifier. |
 | `GEMINI_THINKING_LEVEL` | `low` | Thinking level. |
 | `GEMINI_MAX_OUTPUT_TOKENS` | `8192` | Max generated tokens. |
 | `GEMINI_TEMPERATURE` | `0.2` | Sampling temperature. |

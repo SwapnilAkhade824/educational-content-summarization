@@ -1,0 +1,1961 @@
+{
+  "evaluation_date": "2026-11-23T13:05:32.704042+00:00",
+  "project": "Educational Content Summarization System",
+  "suite": "benchmark",
+  "sample_counts": {
+    "summarization": 12,
+    "sentiment": 60,
+    "concepts": 10,
+    "topics": 15
+  },
+  "results": {
+    "summarization": {
+      "dataset_id": "academic_summarization_benchmark_v1",
+      "description": "12 multi-paragraph educational passages across AI, ML, NLP, Databases, OS, and Networks with concise human-written reference summaries.",
+      "sample_count": 12,
+      "textrank_macro_rouge": {
+        "rouge_1": {
+          "precision": 0.2147323887623291,
+          "recall": 0.29881575242418357,
+          "f1": 0.24840267448266762
+        },
+        "rouge_2": {
+          "precision": 0.04805915662657936,
+          "recall": 0.06543639623710697,
+          "f1": 0.05513715955235643
+        },
+        "rouge_l": {
+          "precision": 0.1410384754326006,
+          "recall": 0.19534339075864746,
+          "f1": 0.16287593259089947
+        }
+      },
+      "textrank_avg_latency_seconds": 0.017,
+      "llm_model_id": "gemini-3.5-flash-lite",
+      "llm_evaluated_count": 12,
+      "llm_macro_rouge": {
+        "rouge_1": {
+          "precision": 0.28848159941896684,
+          "recall": 0.39245363768772584,
+          "f1": 0.330320854826546
+        },
+        "rouge_2": {
+          "precision": 0.08065453204147727,
+          "recall": 0.11431024708528488,
+          "f1": 0.09406039512573115
+        },
+        "rouge_l": {
+          "precision": 0.21046348371463708,
+          "recall": 0.28576241123202745,
+          "f1": 0.2408141359956114
+        }
+      },
+      "llm_full_output_macro_rouge": {
+        "rouge_1": {
+          "precision": 0.0870536186907584,
+          "recall": 0.6608693740958483,
+          "f1": 0.15358282967272305
+        },
+        "rouge_2": {
+          "precision": 0.03271359502838123,
+          "recall": 0.2542357680033436,
+          "f1": 0.05788500033268284
+        },
+        "rouge_l": {
+          "precision": 0.05992821865455678,
+          "recall": 0.45638993280409146,
+          "f1": 0.10577137799002263
+        }
+      },
+      "llm_avg_latency_seconds": 3.0204,
+      "samples": [
+        {
+          "id": "sum_01_ai_search",
+          "domain": "Artificial Intelligence",
+          "reference_summary": "Informed search improves upon exponential uninformed search by guiding exploration with a heuristic function h(n). A* evaluates nodes via f(n) = g(n) + h(n) and guarantees optimal solutions under admissible and consistent heuristics, though memory-bounded variants like IDA* are needed when space is constrained.",
+          "textrank_summary": "Uninformed search expands nodes systematically without estimating how close a state lies to the goal, causing exponential memory and time growth on large graphs. When the heuristic function is admissible—meaning it never overestimates the true minimum cost to reach the goal—A* is guaranteed to return an optimal solution in tree search.",
+          "textrank_latency_seconds": 0.1541,
+          "textrank_rouge": {
+            "rouge_1": {
+              "precision": 0.21568627450980393,
+              "recall": 0.25,
+              "f1": 0.23157894736842105
+            },
+            "rouge_2": {
+              "precision": 0.04,
+              "recall": 0.046511627906976744,
+              "f1": 0.04301075268817204
+            },
+            "rouge_l": {
+              "precision": 0.11764705882352941,
+              "recall": 0.13636363636363635,
+              "f1": 0.1263157894736842
+            }
+          },
+          "llm_summary": {
+            "status": "executed",
+            "model_id": "gemini-3.5-flash-lite",
+            "main_summary": "Heuristic search algorithms solve complex state-space problems that overwhelm uninformed strategies by using a domain-specific heuristic function to prioritize promising paths. The A* search algorithm combines actual path costs and estimated remaining costs to find optimal solutions efficiently. While powerful, A*'s high memory consumption on large graphs requires memory-bounded variants for extremely large search spaces.",
+            "summary": "## Main Summary\nHeuristic search algorithms solve complex state-space problems that overwhelm uninformed strategies by using a domain-specific heuristic function to prioritize promising paths. The A* search algorithm combines actual path costs and estimated remaining costs to find optimal solutions efficiently. While powerful, A*'s high memory consumption on large graphs requires memory-bounded variants for extremely large search spaces.\n\n## Key Concepts\n- **Uninformed vs. Informed Search:** Uninformed strategies expand nodes systematically without estimating distance to the goal, causing exponential time and memory growth. Informed search uses domain-specific heuristic functions to prioritize promising paths.\n- **A* Search Optimization:** A* balances actual path costs and estimated remaining costs to evaluate and prioritize paths.\n- **Heuristic Properties:** Admissibility and consistency ensure that A* finds optimal solutions in tree and graph searches.\n- **Memory-Bounded Variants:** Algorithms like IDA* are used when A*'s requirement to store all generated nodes exceeds available memory in massive search spaces.\n\n## Important Definitions\n- **Heuristic function h(n):** A domain-specific function used in informed search to estimate how close a state lies to the goal.\n- **Admissible heuristic:** A heuristic function that never overestimates the true minimum cost to reach the goal.\n- **Consistent heuristic:** A heuristic function that satisfies the triangle inequality across edges.\n\n## Important Points\n- Uninformed search methods suffer from exponential memory and time growth on large graphs.\n- The A* algorithm uses the evaluation function $f(n) = g(n) + h(n)$, where $g(n)$ is the actual path cost from the start node and $h(n)$ is the estimated remaining cost.\n- If a heuristic is admissible, A* is guaranteed to return an optimal solution in tree search.\n- If a heuristic is consistent, A* remains optimal in graph search without needing to re-expand closed nodes.\n- A* stores all generated nodes in memory, necessitating memory-bounded variants (such as IDA*) for extremely large search spaces.\n\n## Revision Notes\n- Memorize the A* evaluation formula: $f(n) = g(n) + h(n)$.\n- Distinguish between admissibility (never overestimating the true minimum cost) and consistency (satisfying the triangle inequality).\n- Remember that A* guarantees optimality (with proper heuristics), but its memory limits require variants like IDA* for massive problems.",
+            "latency_seconds": 4.7651,
+            "rouge": {
+              "rouge_1": {
+                "precision": 0.23636363636363636,
+                "recall": 0.29545454545454547,
+                "f1": 0.2626262626262626
+              },
+              "rouge_2": {
+                "precision": 0.05555555555555555,
+                "recall": 0.06976744186046512,
+                "f1": 0.06185567010309279
+              },
+              "rouge_l": {
+                "precision": 0.21818181818181817,
+                "recall": 0.2727272727272727,
+                "f1": 0.24242424242424243
+              }
+            },
+            "full_output_rouge": {
+              "rouge_1": {
+                "precision": 0.07282913165266107,
+                "recall": 0.5909090909090909,
+                "f1": 0.1296758104738155
+              },
+              "rouge_2": {
+                "precision": 0.03089887640449438,
+                "recall": 0.2558139534883721,
+                "f1": 0.05513784461152882
+              },
+              "rouge_l": {
+                "precision": 0.047619047619047616,
+                "recall": 0.38636363636363635,
+                "f1": 0.08478802992518703
+              }
+            }
+          }
+        },
+        {
+          "id": "sum_02_supervised_ml",
+          "domain": "Machine Learning",
+          "reference_summary": "Supervised learning balances underfitting bias and overfitting variance to generalize to unseen data. L2 (Ridge) and L1 (Lasso) regularization control model complexity by shrinking or zeroing weights, with regularization strength tuned via k-fold cross-validation.",
+          "textrank_summary": "Two central error sources govern generalization performance: bias, which arises from overly simplistic model assumptions that underfit the training distribution, and variance, which occurs when overly flexible models memorize noise and overfit the training data. L2 regularization, or Ridge regression, adds a squared magnitude penalty on weights to shrink parameters smoothly toward zero.",
+          "textrank_latency_seconds": 0.0047,
+          "textrank_rouge": {
+            "rouge_1": {
+              "precision": 0.1320754716981132,
+              "recall": 0.20588235294117646,
+              "f1": 0.16091954022988503
+            },
+            "rouge_2": {
+              "precision": 0.019230769230769232,
+              "recall": 0.030303030303030304,
+              "f1": 0.023529411764705882
+            },
+            "rouge_l": {
+              "precision": 0.07547169811320754,
+              "recall": 0.11764705882352941,
+              "f1": 0.09195402298850575
+            }
+          },
+          "llm_summary": {
+            "status": "executed",
+            "model_id": "gemini-3.5-flash-lite",
+            "main_summary": "Supervised learning trains predictive models using labeled input-output pairs. Generalization performance is governed by the bias-variance tradeoff, balancing underfitting (bias) and overfitting (variance). Regularization techniques like L2 and L1 regularization help constrain model complexity to reduce variance, with hyperparameters selected using k-fold cross-validation.",
+            "summary": "## Main Summary\nSupervised learning trains predictive models using labeled input-output pairs. Generalization performance is governed by the bias-variance tradeoff, balancing underfitting (bias) and overfitting (variance). Regularization techniques like L2 and L1 regularization help constrain model complexity to reduce variance, with hyperparameters selected using k-fold cross-validation.\n\n## Key Concepts\n- Supervised learning and generalization\n- The bias-variance tradeoff\n- Regularization techniques (L2 and L1)\n- Model selection via k-fold cross-validation\n\n## Important Definitions\n- Bias: Error that arises from overly simplistic model assumptions that underfit the training distribution.\n- Variance: Error that occurs when overly flexible models memorize noise and overfit the training data.\n- Bias-variance tradeoff: The process of balancing the competing errors of bias and variance.\n- L2 regularization (Ridge regression): A technique that adds a squared magnitude penalty on weights to shrink parameters smoothly toward zero.\n- L1 regularization (Lasso regression): A technique that penalizes absolute weight magnitudes and encourages sparse solutions by driving irrelevant feature weights exactly to zero.\n\n## Important Points\n- Supervised learning trains predictive models on labeled input-output pairs to generalize to unseen test instances.\n- Regularization constrains model complexity to reduce variance without discarding informative features.\n- Practitioners use k-fold cross-validation to select the regularization strength hyperparameter without leaking the held-out test set.\n\n## Revision Notes\n- Remember that bias leads to underfitting due to simplistic assumptions, while variance leads to overfitting by memorizing noise.\n- L2 regularization shrinks weights toward zero smoothly, whereas L1 regularization can drive irrelevant feature weights exactly to zero for sparse solutions.",
+            "latency_seconds": 2.0659,
+            "rouge": {
+              "rouge_1": {
+                "precision": 0.3953488372093023,
+                "recall": 0.5,
+                "f1": 0.44155844155844154
+              },
+              "rouge_2": {
+                "precision": 0.11904761904761904,
+                "recall": 0.15151515151515152,
+                "f1": 0.13333333333333333
+              },
+              "rouge_l": {
+                "precision": 0.32558139534883723,
+                "recall": 0.4117647058823529,
+                "f1": 0.36363636363636365
+              }
+            },
+            "full_output_rouge": {
+              "rouge_1": {
+                "precision": 0.09803921568627451,
+                "recall": 0.7352941176470589,
+                "f1": 0.17301038062283738
+              },
+              "rouge_2": {
+                "precision": 0.04330708661417323,
+                "recall": 0.3333333333333333,
+                "f1": 0.07665505226480837
+              },
+              "rouge_l": {
+                "precision": 0.058823529411764705,
+                "recall": 0.4411764705882353,
+                "f1": 0.10380622837370242
+              }
+            }
+          }
+        },
+        {
+          "id": "sum_03_neural_nets",
+          "domain": "Deep Learning",
+          "reference_summary": "Neural networks stack linear layers with nonlinear activations to learn complex functions, computing prediction error in a forward pass and weight gradients via backpropagation using the chain rule. Optimizers like SGD and Adam update parameters iteratively, while techniques such as ReLU, normalization, and residual connections mitigate vanishing or exploding gradients.",
+          "textrank_summary": "During the forward pass, activations propagate layer by layer from the input vector to produce predicted outputs, which are compared against target labels via a differentiable loss function such as cross-entropy or mean squared error. Backpropagation computes the exact gradient of the loss with respect to every network weight by applying the multivariable chain rule backward from the output layer to the input layer.",
+          "textrank_latency_seconds": 0.0065,
+          "textrank_rouge": {
+            "rouge_1": {
+              "precision": 0.203125,
+              "recall": 0.26,
+              "f1": 0.22807017543859648
+            },
+            "rouge_2": {
+              "precision": 0.015873015873015872,
+              "recall": 0.02040816326530612,
+              "f1": 0.017857142857142856
+            },
+            "rouge_l": {
+              "precision": 0.09375,
+              "recall": 0.12,
+              "f1": 0.10526315789473684
+            }
+          },
+          "llm_summary": {
+            "status": "executed",
+            "model_id": "gemini-3.5-flash-lite",
+            "main_summary": "Multilayer perceptrons (MLPs) use stacked linear transformations combined with nonlinear activation functions to approximate complex continuous mappings. Networks process data through a forward pass to generate predictions, measure error using a loss function, and update weights iteratively via backpropagation and gradient-based optimizers. Deep architectures require specific remedies to manage training instability caused by vanishing or exploding gradients.",
+            "summary": "## Main Summary\nMultilayer perceptrons (MLPs) use stacked linear transformations combined with nonlinear activation functions to approximate complex continuous mappings. Networks process data through a forward pass to generate predictions, measure error using a loss function, and update weights iteratively via backpropagation and gradient-based optimizers. Deep architectures require specific remedies to manage training instability caused by vanishing or exploding gradients.\n\n## Key Concepts\n- Multilayer Perceptrons (MLPs)\n- Forward Pass and Loss Calculation\n- Backpropagation and Optimization\n- Training Stability in Deep Architectures\n\n## Important Definitions\n- Multilayer perceptrons: Systems that compose stacked linear transformations with nonlinear activation functions to approximate complex continuous mappings.\n- Backpropagation: The process that computes the exact gradient of the loss with respect to every network weight by applying the multivariable chain rule backward from the output layer to the input layer.\n- Gradient-based optimizers: Algorithms such as stochastic gradient descent with momentum or Adam that update weights iteratively to minimize the objective.\n\n## Important Points\n- Without nonlinear activations, stacking multiple affine layers collapses algebraically into a single linear transformation that cannot solve non-linearly separable tasks like XOR.\n- During the forward pass, activations propagate layer by layer from the input vector to produce predicted outputs, which are compared against target labels via a differentiable loss function (e.g., cross-entropy or mean squared error).\n- Vanishing or exploding gradients in deep architectures can destabilize training.\n- Training stability can be maintained using remedies such as ReLU activations, careful weight initialization, batch normalization, and residual skip connections.\n\n## Revision Notes\n- Remember that nonlinear activation functions are essential; without them, multi-layer affine layers simply collapse into a single linear transformation.\n- Backpropagation works backward from the output layer to the input layer using the multivariable chain rule to compute exact weight gradients.",
+            "latency_seconds": 2.3162,
+            "rouge": {
+              "rouge_1": {
+                "precision": 0.3508771929824561,
+                "recall": 0.4,
+                "f1": 0.37383177570093457
+              },
+              "rouge_2": {
+                "precision": 0.125,
+                "recall": 0.14285714285714285,
+                "f1": 0.13333333333333333
+              },
+              "rouge_l": {
+                "precision": 0.2807017543859649,
+                "recall": 0.32,
+                "f1": 0.29906542056074764
+              }
+            },
+            "full_output_rouge": {
+              "rouge_1": {
+                "precision": 0.11486486486486487,
+                "recall": 0.68,
+                "f1": 0.19653179190751444
+              },
+              "rouge_2": {
+                "precision": 0.04067796610169491,
+                "recall": 0.24489795918367346,
+                "f1": 0.06976744186046513
+              },
+              "rouge_l": {
+                "precision": 0.07094594594594594,
+                "recall": 0.42,
+                "f1": 0.12138728323699421
+              }
+            }
+          }
+        },
+        {
+          "id": "sum_04_nlp_preprocessing",
+          "domain": "Natural Language Processing",
+          "reference_summary": "NLP preprocessing converts noisy raw text into standardized tokens through segmentation, Unicode normalization, stopword filtering that preserves negations, and morphological reduction. POS-aware lemmatization maps inflected words to valid dictionary roots more cleanly than suffix-truncating stemming.",
+          "textrank_summary": "Raw text collected from PDFs, lecture notes, and web pages contains irregular formatting, punctuation, inflected word forms, and high-frequency function words that can obscure lexical patterns in classical NLP pipelines. Sentence and word tokenization segment continuous character streams into discrete analytical units, while Unicode normalization and case folding reconcile surface encoding inconsistencies.",
+          "textrank_latency_seconds": 0.0048,
+          "textrank_rouge": {
+            "rouge_1": {
+              "precision": 0.17307692307692307,
+              "recall": 0.2571428571428571,
+              "f1": 0.20689655172413793
+            },
+            "rouge_2": {
+              "precision": 0.0196078431372549,
+              "recall": 0.029411764705882353,
+              "f1": 0.023529411764705882
+            },
+            "rouge_l": {
+              "precision": 0.09615384615384616,
+              "recall": 0.14285714285714285,
+              "f1": 0.1149425287356322
+            }
+          },
+          "llm_summary": {
+            "status": "executed",
+            "model_id": "gemini-3.5-flash-lite",
+            "main_summary": "Raw text from various sources often contains irregularities that obscure lexical patterns. Preprocessing standardizes this text before numerical feature extraction by using tokenization, normalization, stopword filtering, and morphological normalization to create cleaner vocabularies for tasks like vectorization and topic modeling.",
+            "summary": "## Main Summary\nRaw text from various sources often contains irregularities that obscure lexical patterns. Preprocessing standardizes this text before numerical feature extraction by using tokenization, normalization, stopword filtering, and morphological normalization to create cleaner vocabularies for tasks like vectorization and topic modeling.\n\n## Key Concepts\n- Text Standardization: Preparing raw text for numerical feature extraction by removing irregularities.\n- Segmentation and Normalization: Breaking text into discrete units and reconciling encoding inconsistencies.\n- Lexical Reduction: Removing non-essential words and collapsing inflected variants into canonical forms.\n\n## Important Definitions\n- Tokenization: The process of segmenting continuous character streams into discrete analytical units (sentences and words).\n- Unicode normalization and case folding: Techniques used to reconcile surface encoding inconsistencies.\n- Stopword filtering: The removal of common articles and prepositions that contribute little topical specificity.\n- Stemming: A rule-based method that aggressively truncates suffixes and can yield non-words.\n- POS-aware lemmatization: A method that maps tokens to valid dictionary base forms using part-of-speech context.\n\n## Important Points\n- Preprocessing is necessary to overcome irregular formatting, punctuation, and inflected word forms found in raw text.\n- Negation words (such as *not*, *no*, and *never*) must be retained during stopword filtering because discarding them can invert a sentence's polarity or logical meaning.\n- POS-aware lemmatization produces cleaner vocabularies for vectorization and topic modeling than rule-based stemming.\n\n## Revision Notes\n- Remember that stemming is rule-based and can create non-words through aggressive suffix truncation, whereas lemmatization uses part-of-speech context for valid dictionary base forms.\n- Do not forget the exception in stopword filtering: always keep negation words.",
+            "latency_seconds": 4.8464,
+            "rouge": {
+              "rouge_1": {
+                "precision": 0.225,
+                "recall": 0.2571428571428571,
+                "f1": 0.24
+              },
+              "rouge_2": {
+                "precision": 0.07692307692307693,
+                "recall": 0.08823529411764706,
+                "f1": 0.0821917808219178
+              },
+              "rouge_l": {
+                "precision": 0.175,
+                "recall": 0.2,
+                "f1": 0.18666666666666665
+              }
+            },
+            "full_output_rouge": {
+              "rouge_1": {
+                "precision": 0.08812260536398467,
+                "recall": 0.6571428571428571,
+                "f1": 0.1554054054054054
+              },
+              "rouge_2": {
+                "precision": 0.03076923076923077,
+                "recall": 0.23529411764705882,
+                "f1": 0.054421768707483
+              },
+              "rouge_l": {
+                "precision": 0.05747126436781609,
+                "recall": 0.42857142857142855,
+                "f1": 0.10135135135135134
+              }
+            }
+          }
+        },
+        {
+          "id": "sum_05_tfidf_ir",
+          "domain": "Information Retrieval",
+          "reference_summary": "TF-IDF represents documents in a vector space by combining local term frequency with inverse document frequency to emphasize distinctive terms and down-weight common ones. Cosine similarity then compares these vectors independently of document length for ranking and clustering.",
+          "textrank_summary": "Term Frequency-Inverse Document Frequency (TF-IDF) addresses this limitation by weighting each term according to both its local prominence in a document and its rarity across the collection. Once documents are transformed into TF-IDF vectors, cosine similarity measures the angle between two vectors independently of document length.",
+          "textrank_latency_seconds": 0.004,
+          "textrank_rouge": {
+            "rouge_1": {
+              "precision": 0.3695652173913043,
+              "recall": 0.4473684210526316,
+              "f1": 0.40476190476190477
+            },
+            "rouge_2": {
+              "precision": 0.13333333333333333,
+              "recall": 0.16216216216216217,
+              "f1": 0.14634146341463417
+            },
+            "rouge_l": {
+              "precision": 0.2391304347826087,
+              "recall": 0.2894736842105263,
+              "f1": 0.2619047619047619
+            }
+          },
+          "llm_summary": {
+            "status": "executed",
+            "model_id": "gemini-3.5-flash-lite",
+            "main_summary": "The vector space model represents documents and queries as sparse numerical vectors, but raw term counts can be misleading because frequent words dominate similarity scores. Term Frequency-Inverse Document Frequency (TF-IDF) solves this by weighting terms based on local prominence and global rarity. Cosine similarity is then used to measure the angle between these vectors, providing a reliable, length-invariant baseline for document ranking, clustering, and sentence-similarity graphs.",
+            "summary": "## Main Summary\nThe vector space model represents documents and queries as sparse numerical vectors, but raw term counts can be misleading because frequent words dominate similarity scores. Term Frequency-Inverse Document Frequency (TF-IDF) solves this by weighting terms based on local prominence and global rarity. Cosine similarity is then used to measure the angle between these vectors, providing a reliable, length-invariant baseline for document ranking, clustering, and sentence-similarity graphs.\n\n## Key Concepts\n- Vector Space Model: A framework where documents and queries are represented as sparse numerical vectors over a shared vocabulary.\n- Term Weighting: Adjusting raw term counts using TF-IDF to account for both local frequency and collection-wide rarity.\n- Geometric Similarity: Using cosine similarity to measure the angle between vectors independently of document length.\n\n## Important Definitions\n- Term Frequency: Captures how often a term occurs within a single document, often damped with a sublinear logarithm to prevent repeated mentions from inflating weights linearly.\n- Inverse Document Frequency: A measure that down-weights terms that appear in many documents across the collection.\n- Cosine Similarity: A length-invariant geometric measure used for document ranking, clustering, and sentence-similarity graphs.\n\n## Important Points\n- Raw term counts are misleading because frequent words like 'system' or 'data' dominate similarity scores even when they appear across nearly every document.\n- TF-IDF addresses the limitations of raw term counts by weighting each term according to its local prominence and rarity.\n- Once documents are transformed into TF-IDF vectors, cosine similarity serves as a reliable baseline for ranking and clustering.\n\n## Revision Notes\n- Remember that TF-IDF combines local term frequency and global inverse document frequency to weight terms accurately.\n- Keep in mind that cosine similarity is independent of document length, making it effective for comparing vectors.",
+            "latency_seconds": 2.4335,
+            "rouge": {
+              "rouge_1": {
+                "precision": 0.30303030303030304,
+                "recall": 0.5263157894736842,
+                "f1": 0.38461538461538464
+              },
+              "rouge_2": {
+                "precision": 0.06153846153846154,
+                "recall": 0.10810810810810811,
+                "f1": 0.0784313725490196
+              },
+              "rouge_l": {
+                "precision": 0.19696969696969696,
+                "recall": 0.34210526315789475,
+                "f1": 0.25
+              }
+            },
+            "full_output_rouge": {
+              "rouge_1": {
+                "precision": 0.10273972602739725,
+                "recall": 0.7894736842105263,
+                "f1": 0.18181818181818182
+              },
+              "rouge_2": {
+                "precision": 0.048109965635738834,
+                "recall": 0.3783783783783784,
+                "f1": 0.08536585365853659
+              },
+              "rouge_l": {
+                "precision": 0.06506849315068493,
+                "recall": 0.5,
+                "f1": 0.11515151515151514
+              }
+            }
+          }
+        },
+        {
+          "id": "sum_06_textrank",
+          "domain": "Text Summarization",
+          "reference_summary": "TextRank is an unsupervised extractive summarizer that builds a weighted sentence-similarity graph and applies PageRank (damping 0.85) to identify central sentences. Selecting the top-ranked verbatim sentences in original order avoids hallucination while preserving source terminology.",
+          "textrank_summary": "Each unique sentence in the document becomes a vertex in an undirected weighted graph, and edges connect sentence pairs based on their lexical or TF-IDF cosine similarity. Finally, the top-k highest-scoring sentences are selected and reordered according to their original document positions to maintain logical reading flow.",
+          "textrank_latency_seconds": 0.004,
+          "textrank_rouge": {
+            "rouge_1": {
+              "precision": 0.19148936170212766,
+              "recall": 0.2571428571428571,
+              "f1": 0.21951219512195122
+            },
+            "rouge_2": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "rouge_l": {
+              "precision": 0.1276595744680851,
+              "recall": 0.17142857142857143,
+              "f1": 0.14634146341463414
+            }
+          },
+          "llm_summary": {
+            "status": "executed",
+            "model_id": "gemini-3.5-flash-lite",
+            "main_summary": "Extractive summarization creates condensed overviews by selecting verbatim sentences from a source document, preventing factual hallucination and preserving exact domain terminology. TextRank is a specific unsupervised, graph-based method that adapts Google's PageRank algorithm to rank and select these sentences based on lexical or TF-IDF cosine similarity.",
+            "summary": "## Main Summary\nExtractive summarization creates condensed overviews by selecting verbatim sentences from a source document, preventing factual hallucination and preserving exact domain terminology. TextRank is a specific unsupervised, graph-based method that adapts Google's PageRank algorithm to rank and select these sentences based on lexical or TF-IDF cosine similarity.\n\n## Key Concepts\n- Extractive Summarization\n- Graph-Based Sentence Ranking\n- TextRank Algorithm\n\n## Important Definitions\n- Extractive summarization: A summarization method that constructs a condensed overview by selecting the most informative original sentences directly from a source document without rewriting them.\n- TextRank: An adaptation of Google's PageRank algorithm into an unsupervised graph-based sentence ranking framework that uses an undirected weighted graph to score sentences based on similarity.\n\n## Important Points\n- Extractive systems avoid factual hallucination and preserve exact domain terminology because every sentence comes verbatim from the input, though they may lack smooth cross-sentence transitions.\n- In TextRank, each unique sentence is a vertex in an undirected weighted graph, and edges connect sentence pairs based on lexical or TF-IDF cosine similarity.\n- PageRank propagates importance scores iteratively across the graph using a damping factor typically set to 0.85 to assign higher centrality to sentences with strong semantic overlap.\n- The top-k highest-scoring sentences are selected and reordered according to their original document positions to maintain logical reading flow.\n\n## Revision Notes\n- Extractive summarization = verbatim selection; pros: no hallucination, preserves terminology; cons: potential rough transitions.\n- TextRank = graph-based PageRank adapted for text; uses vertices (sentences) and weighted edges (similarity); selects top-k sentences in original order.",
+            "latency_seconds": 2.6421,
+            "rouge": {
+              "rouge_1": {
+                "precision": 0.32608695652173914,
+                "recall": 0.42857142857142855,
+                "f1": 0.37037037037037035
+              },
+              "rouge_2": {
+                "precision": 0.044444444444444446,
+                "recall": 0.058823529411764705,
+                "f1": 0.05063291139240507
+              },
+              "rouge_l": {
+                "precision": 0.15217391304347827,
+                "recall": 0.2,
+                "f1": 0.17283950617283952
+              }
+            },
+            "full_output_rouge": {
+              "rouge_1": {
+                "precision": 0.08494208494208494,
+                "recall": 0.6285714285714286,
+                "f1": 0.14965986394557823
+              },
+              "rouge_2": {
+                "precision": 0.023255813953488372,
+                "recall": 0.17647058823529413,
+                "f1": 0.0410958904109589
+              },
+              "rouge_l": {
+                "precision": 0.05791505791505792,
+                "recall": 0.42857142857142855,
+                "f1": 0.10204081632653061
+              }
+            }
+          }
+        },
+        {
+          "id": "sum_07_lda_topics",
+          "domain": "Topic Modeling",
+          "reference_summary": "Latent Dirichlet Allocation models documents as mixtures of latent topics and topics as probability distributions over words using Dirichlet priors and approximate inference like variational Bayes. Although perplexity measures predictive fit, human interpretability requires keyword inspection or coherence evaluation.",
+          "textrank_summary": "LDA models each document as a finite mixture over K latent topics, where each topic is itself represented as a probability distribution over words in a Bag-of-Words vocabulary. Dirichlet priors govern the sparsity of both document-topic proportions and topic-word distributions, encouraging documents to focus on a small subset of themes and topics to concentrate probability mass on coherent domain keywords.",
+          "textrank_latency_seconds": 0.0041,
+          "textrank_rouge": {
+            "rouge_1": {
+              "precision": 0.23333333333333334,
+              "recall": 0.358974358974359,
+              "f1": 0.2828282828282829
+            },
+            "rouge_2": {
+              "precision": 0.05084745762711865,
+              "recall": 0.07894736842105263,
+              "f1": 0.061855670103092786
+            },
+            "rouge_l": {
+              "precision": 0.16666666666666666,
+              "recall": 0.2564102564102564,
+              "f1": 0.20202020202020202
+            }
+          },
+          "llm_summary": {
+            "status": "executed",
+            "model_id": "gemini-3.5-flash-lite",
+            "main_summary": "Latent Dirichlet Allocation (LDA) is a generative probabilistic topic model designed to uncover hidden themes within collections of unlabeled text documents. By treating documents as mixtures of latent topics and topics as word distributions, LDA helps organize text data. Because exact calculations are too complex, it relies on approximate inference methods and requires careful evaluation using both statistical measures and human-perceived interpretability.",
+            "summary": "## Main Summary\nLatent Dirichlet Allocation (LDA) is a generative probabilistic topic model designed to uncover hidden themes within collections of unlabeled text documents. By treating documents as mixtures of latent topics and topics as word distributions, LDA helps organize text data. Because exact calculations are too complex, it relies on approximate inference methods and requires careful evaluation using both statistical measures and human-perceived interpretability.\n\n## Key Concepts\n- **Topic Modeling:** Uncovering hidden thematic structures in collections of unlabeled text documents.\n- **Probabilistic Structure:** Modeling documents as mixtures of latent topics and topics as probability distributions over words.\n- **Model Inference:** Using approximation techniques to solve complex probability calculations.\n- **Model Evaluation:** Assessing model performance through statistical measures and human-centered metrics.\n\n## Important Definitions\n- **Latent Dirichlet Allocation (LDA):** A generative probabilistic topic model that uncovers hidden thematic structures across collections of unlabeled text documents.\n- **Dirichlet priors:** Mathematical distributions that govern the sparsity of document-topic proportions and topic-word distributions, encouraging focused themes and coherent domain keywords.\n- **Held-out perplexity:** A measure used to evaluate how well a learned model predicts word occurrences.\n\n## Important Points\n- LDA represents each document as a finite mixture over $K$ latent topics using a Bag-of-Words vocabulary.\n- Exact posterior inference over latent topic assignments is intractable, requiring practical implementations to use approximate methods like **variational Bayes** or **collapsed Gibbs sampling**.\n- Lower held-out perplexity does not always align with human-perceived topic interpretability.\n- Keyword inspection and coherence metrics are essential for proper evaluation.\n\n## Revision Notes\n- Remember that LDA is used for *unlabeled* text documents.\n- Do not confuse statistical performance (like perplexity) with human interpretability; both are important, but they do not always correlate.",
+            "latency_seconds": 4.4095,
+            "rouge": {
+              "rouge_1": {
+                "precision": 0.2903225806451613,
+                "recall": 0.46153846153846156,
+                "f1": 0.3564356435643564
+              },
+              "rouge_2": {
+                "precision": 0.18032786885245902,
+                "recall": 0.2894736842105263,
+                "f1": 0.22222222222222224
+              },
+              "rouge_l": {
+                "precision": 0.24193548387096775,
+                "recall": 0.38461538461538464,
+                "f1": 0.29702970297029707
+              }
+            },
+            "full_output_rouge": {
+              "rouge_1": {
+                "precision": 0.10600706713780919,
+                "recall": 0.7692307692307693,
+                "f1": 0.1863354037267081
+              },
+              "rouge_2": {
+                "precision": 0.05319148936170213,
+                "recall": 0.39473684210526316,
+                "f1": 0.09375
+              },
+              "rouge_l": {
+                "precision": 0.08833922261484099,
+                "recall": 0.6410256410256411,
+                "f1": 0.15527950310559008
+              }
+            }
+          }
+        },
+        {
+          "id": "sum_08_db_acid",
+          "domain": "Database Systems",
+          "reference_summary": "Database transactions enforce ACID guarantees—Atomicity, Consistency, Isolation, and Durability—to protect data integrity under concurrency and failures. Systems achieve these properties using rollbacks, concurrency control such as locking or MVCC, and write-ahead logging for crash recovery.",
+          "textrank_summary": "Relational database management systems guarantee reliable multi-user data processing through transactions that satisfy the ACID properties: Atomicity, Consistency, Isolation, and Durability. Consistency enforces that every committed transaction transitions the database from one valid integrity-preserving state to another.",
+          "textrank_latency_seconds": 0.0041,
+          "textrank_rouge": {
+            "rouge_1": {
+              "precision": 0.21621621621621623,
+              "recall": 0.22857142857142856,
+              "f1": 0.22222222222222224
+            },
+            "rouge_2": {
+              "precision": 0.05555555555555555,
+              "recall": 0.058823529411764705,
+              "f1": 0.05714285714285714
+            },
+            "rouge_l": {
+              "precision": 0.16216216216216217,
+              "recall": 0.17142857142857143,
+              "f1": 0.16666666666666669
+            }
+          },
+          "llm_summary": {
+            "status": "executed",
+            "model_id": "gemini-3.5-flash-lite",
+            "main_summary": "Relational database management systems ensure reliable multi-user data processing by using transactions that meet the ACID properties. These mechanisms prevent partial updates, maintain data integrity, control concurrent transaction visibility, and protect committed data against system failures.",
+            "summary": "## Main Summary\nRelational database management systems ensure reliable multi-user data processing by using transactions that meet the ACID properties. These mechanisms prevent partial updates, maintain data integrity, control concurrent transaction visibility, and protect committed data against system failures.\n\n## Key Concepts\n- ACID Properties\n- Concurrency Control\n- Transaction Reliability and Integrity\n\n## Important Definitions\n- Atomicity: Ensures that every operation within a transaction either completes fully or rolls back completely upon failure.\n- Consistency: Enforces that every committed transaction transitions the database from one valid integrity-preserving state to another.\n- Isolation: Controls how concurrent transactions observe each other's intermediate writes to prevent anomalies.\n- Durability: Guarantees that once a transaction commits, its changes survive system crashes or power failures.\n\n## Important Points\n- Atomicity prevents partial updates, such as debiting one bank account without crediting another.\n- Isolation prevents anomalies like dirty reads, non-repeatable reads, and phantom reads using mechanisms such as two-phase locking or multiversion concurrency control (MVCC).\n- Durability is typically achieved via write-ahead logging (WAL) that flushes redo records to non-volatile storage before acknowledging commit completion.\n\n## Revision Notes\n- Remember the four components of ACID: Atomicity, Consistency, Isolation, and Durability.\n- Concurrency anomalies (dirty reads, non-repeatable reads, phantom reads) are managed by isolation techniques like two-phase locking and MVCC.\n- Durability relies on write-ahead logging (WAL) to survive power failures and system crashes.",
+            "latency_seconds": 2.2493,
+            "rouge": {
+              "rouge_1": {
+                "precision": 0.3055555555555556,
+                "recall": 0.3142857142857143,
+                "f1": 0.3098591549295775
+              },
+              "rouge_2": {
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "rouge_l": {
+                "precision": 0.19444444444444445,
+                "recall": 0.2,
+                "f1": 0.19718309859154928
+              }
+            },
+            "full_output_rouge": {
+              "rouge_1": {
+                "precision": 0.1091703056768559,
+                "recall": 0.7142857142857143,
+                "f1": 0.18939393939393942
+              },
+              "rouge_2": {
+                "precision": 0.02631578947368421,
+                "recall": 0.17647058823529413,
+                "f1": 0.045801526717557245
+              },
+              "rouge_l": {
+                "precision": 0.07423580786026202,
+                "recall": 0.4857142857142857,
+                "f1": 0.1287878787878788
+              }
+            }
+          }
+        },
+        {
+          "id": "sum_09_bplus_trees",
+          "domain": "Database Indexing",
+          "reference_summary": "B+ trees accelerate disk-based database queries by packing high-fan-out routing keys into page-aligned internal nodes, keeping tree height minimal for O(log n) lookups. Storing all records in sequentially linked leaf nodes also enables fast range scans without revisiting internal levels.",
+          "textrank_summary": "Database engines accelerate lookups and range queries by maintaining secondary index structures, with the B+ tree serving as the standard disk-oriented balanced search tree. Unlike binary search trees that have low fan-out and require many disk I/O operations per search, each B+ tree node aligns with a disk page and stores hundreds of sorted keys and child pointers, keeping tree height typically between three and four levels even for massive datasets.",
+          "textrank_latency_seconds": 0.0046,
+          "textrank_rouge": {
+            "rouge_1": {
+              "precision": 0.16901408450704225,
+              "recall": 0.3,
+              "f1": 0.2162162162162162
+            },
+            "rouge_2": {
+              "precision": 0.04285714285714286,
+              "recall": 0.07692307692307693,
+              "f1": 0.055045871559633024
+            },
+            "rouge_l": {
+              "precision": 0.11267605633802817,
+              "recall": 0.2,
+              "f1": 0.14414414414414414
+            }
+          },
+          "llm_summary": {
+            "status": "executed",
+            "model_id": "gemini-3.5-flash-lite",
+            "main_summary": "As database tables grow to millions of rows, scanning entire tables becomes too slow. Database engines use B+ tree secondary index structures to accelerate lookups and range queries. By aligning nodes with disk pages to store hundreds of keys and child pointers, B+ trees maintain a low height (typically three to four levels) and provide logarithmic $O(\\log n)$ performance for searches, insertions, and deletions.",
+            "summary": "## Main Summary\nAs database tables grow to millions of rows, scanning entire tables becomes too slow. Database engines use B+ tree secondary index structures to accelerate lookups and range queries. By aligning nodes with disk pages to store hundreds of keys and child pointers, B+ trees maintain a low height (typically three to four levels) and provide logarithmic $O(\\log n)$ performance for searches, insertions, and deletions.\n\n## Key Concepts\n- **Disk-Oriented Balanced Search Trees:** Structures like the B+ tree designed to accelerate lookups and range queries, preventing the need for slow full-table scans.\n- **Node Specialization:** Internal nodes store only routing keys to maximize the branching factor, while all data pointers or full records reside exclusively in the leaf level.\n- **Sequential Leaf Linking:** Leaf nodes are connected in a doubly linked list to allow efficient range scans and ordered traversals.\n- **Balanced Operations:** Split and merge operations maintain balanced trees with logarithmic performance.\n\n## Important Definitions\n- B+ tree: The standard disk-oriented balanced search tree used by database engines to accelerate lookups and range queries.\n- Internal nodes: Nodes in a B+ tree that store only routing keys to maximize the branching factor.\n- Leaf nodes: Nodes at the base level of a B+ tree where all data pointers or full records reside, and which are linked sequentially in a doubly linked list.\n\n## Important Points\n- Scanning an entire disk table for every query becomes prohibitively slow as tables grow to millions of rows.\n- Binary search trees have low fan-out and require many disk I/O operations per search, whereas B+ tree nodes align with disk pages to store hundreds of sorted keys and child pointers.\n- B+ tree height typically remains between three and four levels, even for massive datasets.\n- Balanced split and merge operations preserve logarithmic $O(\\log n)$ search, insertion, and deletion performance.\n\n## Revision Notes\n- Remember the structural difference between internal nodes (routing keys only) and leaf nodes (data pointers/full records and sequential doubly linked lists).\n- Understand why B+ trees are preferred over binary search trees for disk storage (high fan-out, aligned with disk pages, low tree height, fewer I/O operations).\n- Keep in mind how sequential leaf linking facilitates efficient range scans without repeatedly traversing back up to internal nodes.",
+            "latency_seconds": 2.7627,
+            "rouge": {
+              "rouge_1": {
+                "precision": 0.171875,
+                "recall": 0.275,
+                "f1": 0.21153846153846156
+              },
+              "rouge_2": {
+                "precision": 0.015873015873015872,
+                "recall": 0.02564102564102564,
+                "f1": 0.0196078431372549
+              },
+              "rouge_l": {
+                "precision": 0.09375,
+                "recall": 0.15,
+                "f1": 0.11538461538461538
+              }
+            },
+            "full_output_rouge": {
+              "rouge_1": {
+                "precision": 0.05789473684210526,
+                "recall": 0.55,
+                "f1": 0.10476190476190476
+              },
+              "rouge_2": {
+                "precision": 0.0158311345646438,
+                "recall": 0.15384615384615385,
+                "f1": 0.028708133971291867
+              },
+              "rouge_l": {
+                "precision": 0.04473684210526316,
+                "recall": 0.425,
+                "f1": 0.08095238095238096
+              }
+            }
+          }
+        },
+        {
+          "id": "sum_10_os_virtual_memory",
+          "domain": "Operating Systems",
+          "reference_summary": "Virtual memory isolates processes via paging, using page tables and a hardware TLB to translate virtual addresses to physical frames. Demand paging loads pages on page faults and evicts frames with policies like LRU or Clock, though insufficient RAM can trigger severe thrashing.",
+          "textrank_summary": "The Memory Management Unit (MMU) translates virtual addresses into physical addresses on every memory access using per-process page tables maintained by the kernel, while a hardware Translation Lookaside Buffer (TLB) caches recent translations to avoid costly extra RAM lookups. Demand paging loads pages from secondary storage into physical frames only when a process accesses them, triggering a page fault interrupt on the first reference.",
+          "textrank_latency_seconds": 0.0038,
+          "textrank_rouge": {
+            "rouge_1": {
+              "precision": 0.28125,
+              "recall": 0.4186046511627907,
+              "f1": 0.3364485981308411
+            },
+            "rouge_2": {
+              "precision": 0.09523809523809523,
+              "recall": 0.14285714285714285,
+              "f1": 0.11428571428571427
+            },
+            "rouge_l": {
+              "precision": 0.203125,
+              "recall": 0.3023255813953488,
+              "f1": 0.24299065420560748
+            }
+          },
+          "llm_summary": {
+            "status": "executed",
+            "model_id": "gemini-3.5-flash-lite",
+            "main_summary": "Modern operating systems use virtual memory and paging to isolate process memory from physical RAM. The Memory Management Unit (MMU) translates virtual addresses to physical addresses using page tables, supported by a Translation Lookaside Buffer (TLB) for faster lookups. Demand paging loads data into RAM only when accessed, but insufficient physical memory can lead to excessive page faults and system thrashing.",
+            "summary": "## Main Summary\nModern operating systems use virtual memory and paging to isolate process memory from physical RAM. The Memory Management Unit (MMU) translates virtual addresses to physical addresses using page tables, supported by a Translation Lookaside Buffer (TLB) for faster lookups. Demand paging loads data into RAM only when accessed, but insufficient physical memory can lead to excessive page faults and system thrashing.\n\n## Key Concepts\n- **Virtual Address Space:** An isolated memory space provided to each running process that decouples program memory from physical RAM.\n- **Address Translation:** The process of converting virtual addresses into physical RAM addresses on every memory access using page tables and the MMU.\n- **Demand Paging:** A memory management strategy that loads pages into physical frames only when they are accessed by a process.\n- **Thrashing:** A performance collapse caused by excessive page faults when active processes require more memory than is physically available.\n\n## Important Definitions\n- **Pages:** Fixed-size blocks that partition virtual memory.\n- **Frames:** Fixed-size blocks that partition physical memory.\n- **Memory Management Unit (MMU):** Hardware that translates virtual addresses into physical addresses on every memory access.\n- **Translation Lookaside Buffer (TLB):** A hardware cache that stores recent address translations to avoid costly extra RAM lookups.\n- **Page Fault:** An interrupt triggered on the first reference when a process accesses a page not currently loaded in physical memory.\n- **Page Replacement Policy:** An operating system method (such as Least Recently Used approximations or the Clock algorithm) used to evict an inactive frame when physical memory fills up.\n\n## Important Points\n- Operating systems provide isolated virtual address spaces to decouple memory layout from physical RAM constraints.\n- Per-process page tables are maintained by the kernel to facilitate address translation.\n- When physical memory fills up, page replacement policies are invoked to evict inactive frames.\n- If active processes need more frames than the available RAM, excessive page faults cause thrashing and collapse CPU utilization.\n\n## Revision Notes\n- Remember the distinction between virtual memory blocks (**pages**) and physical memory blocks (**frames**).\n- Understand the role of the MMU and TLB in optimizing address translation.\n- Know the cause-and-effect chain of demand paging: access $\\rightarrow$ page fault $\\rightarrow$ loading from secondary storage $\\rightarrow$ potential replacement or thrashing if RAM is full.",
+            "latency_seconds": 3.0987,
+            "rouge": {
+              "rouge_1": {
+                "precision": 0.3442622950819672,
+                "recall": 0.4883720930232558,
+                "f1": 0.40384615384615385
+              },
+              "rouge_2": {
+                "precision": 0.15,
+                "recall": 0.21428571428571427,
+                "f1": 0.1764705882352941
+              },
+              "rouge_l": {
+                "precision": 0.2459016393442623,
+                "recall": 0.3488372093023256,
+                "f1": 0.28846153846153844
+              }
+            },
+            "full_output_rouge": {
+              "rouge_1": {
+                "precision": 0.08157894736842106,
+                "recall": 0.7209302325581395,
+                "f1": 0.14657210401891252
+              },
+              "rouge_2": {
+                "precision": 0.03430079155672823,
+                "recall": 0.30952380952380953,
+                "f1": 0.061757719714964375
+              },
+              "rouge_l": {
+                "precision": 0.04736842105263158,
+                "recall": 0.4186046511627907,
+                "f1": 0.08510638297872342
+              }
+            }
+          }
+        },
+        {
+          "id": "sum_11_networks_tcp",
+          "domain": "Computer Networks",
+          "reference_summary": "TCP builds reliable, ordered delivery atop IP using a three-way handshake, sequence numbers, acknowledgments, and retransmissions. It also governs sending rates via receiver-driven flow control and network-aware congestion control phases such as slow start and congestion avoidance.",
+          "textrank_summary": "Beyond end-to-end reliability, TCP regulates sending rates through two distinct control loops: flow control and congestion control. Congestion control protects shared network routers from collapse by dynamically adjusting a congestion window through slow start, congestion avoidance, fast retransmit, and fast recovery whenever packet loss or explicit congestion signals occur.",
+          "textrank_latency_seconds": 0.0046,
+          "textrank_rouge": {
+            "rouge_1": {
+              "precision": 0.24489795918367346,
+              "recall": 0.32432432432432434,
+              "f1": 0.2790697674418604
+            },
+            "rouge_2": {
+              "precision": 0.10416666666666667,
+              "recall": 0.1388888888888889,
+              "f1": 0.11904761904761905
+            },
+            "rouge_l": {
+              "precision": 0.22448979591836735,
+              "recall": 0.2972972972972973,
+              "f1": 0.2558139534883721
+            }
+          },
+          "llm_summary": {
+            "status": "executed",
+            "model_id": "gemini-3.5-flash-lite",
+            "main_summary": "The Transmission Control Protocol (TCP) ensures reliable, ordered, and error-checked delivery of a byte stream over the Internet Protocol (IP) network layer. It establishes connections using a three-way handshake and maintains end-to-end reliability through sequence numbers, acknowledgments, checksums, and adaptive retransmission timers. Additionally, TCP manages sending rates via flow control, which protects slow receivers, and congestion control, which protects shared network infrastructure.",
+            "summary": "## Main Summary\nThe Transmission Control Protocol (TCP) ensures reliable, ordered, and error-checked delivery of a byte stream over the Internet Protocol (IP) network layer. It establishes connections using a three-way handshake and maintains end-to-end reliability through sequence numbers, acknowledgments, checksums, and adaptive retransmission timers. Additionally, TCP manages sending rates via flow control, which protects slow receivers, and congestion control, which protects shared network infrastructure.\n\n## Key Concepts\n- **Connection Establishment:** Endpoints use a three-way handshake (SYN, SYN-ACK, ACK) to synchronize initial sequence numbers and negotiate window parameters before exchanging data.\n- **Reliability Mechanisms:** TCP detects and recovers from corrupted, reordered, or dropped packets using sequence numbers, cumulative acknowledgments, checksums, and adaptive retransmission timers.\n- **Rate Regulation:** TCP uses two distinct control loops—flow control and congestion control—to manage sending rates and prevent buffer overflows or network congestion collapse.\n\n## Important Definitions\n- **Transmission Control Protocol (TCP):** A protocol that provides reliable, ordered, byte-stream delivery over the best-effort Internet Protocol (IP) network layer.\n- **Flow Control:** A control loop that uses the receiver's advertised window to prevent a fast sender from overflowing a slower receiver's buffer.\n- **Congestion Control:** A control loop that protects shared network routers from collapse by dynamically adjusting a congestion window through mechanisms like slow start, congestion avoidance, fast retransmit, and fast recovery.\n\n## Important Points\n- TCP operates on top of the best-effort Internet Protocol (IP) network layer.\n- A three-way handshake (SYN, SYN-ACK, ACK) occurs before application data is exchanged.\n- Congestion control responds to packet loss or explicit congestion signals using slow start, congestion avoidance, fast retransmit, and fast recovery.\n\n## Revision Notes\n- Remember the three steps of the handshake: SYN, SYN-ACK, and ACK.\n- Distinguish between flow control (protects the receiver's buffer) and congestion control (protects shared network routers).",
+            "latency_seconds": 2.2158,
+            "rouge": {
+              "rouge_1": {
+                "precision": 0.3225806451612903,
+                "recall": 0.5405405405405406,
+                "f1": 0.4040404040404041
+              },
+              "rouge_2": {
+                "precision": 0.11475409836065574,
+                "recall": 0.19444444444444445,
+                "f1": 0.14432989690721648
+              },
+              "rouge_l": {
+                "precision": 0.25806451612903225,
+                "recall": 0.43243243243243246,
+                "f1": 0.32323232323232326
+              }
+            },
+            "full_output_rouge": {
+              "rouge_1": {
+                "precision": 0.07407407407407407,
+                "recall": 0.5945945945945946,
+                "f1": 0.13173652694610777
+              },
+              "rouge_2": {
+                "precision": 0.033783783783783786,
+                "recall": 0.2777777777777778,
+                "f1": 0.060240963855421686
+              },
+              "rouge_l": {
+                "precision": 0.06734006734006734,
+                "recall": 0.5405405405405406,
+                "f1": 0.11976047904191617
+              }
+            }
+          }
+        },
+        {
+          "id": "sum_12_cryptography_tls",
+          "domain": "Network Security",
+          "reference_summary": "TLS secures HTTPS traffic through hybrid cryptography, authenticating servers with CA-signed X.509 certificates and negotiating forward-secret session keys via ephemeral Diffie-Hellman. It then switches to fast symmetric authenticated encryption like AES-GCM to ensure confidentiality and integrity.",
+          "textrank_summary": "Symmetric encryption algorithms such as AES encrypt bulk payloads rapidly using a single shared secret key, yet safely distributing that secret key over an insecure channel remains challenging. During the TLS handshake, the server presents an X.509 digital certificate signed by a trusted Certificate Authority (CA) to prove its identity, and both parties run ephemeral Diffie-Hellman key exchange (ECDHE) to establish a shared session key with forward secrecy.",
+          "textrank_latency_seconds": 0.0045,
+          "textrank_rouge": {
+            "rouge_1": {
+              "precision": 0.14705882352941177,
+              "recall": 0.2777777777777778,
+              "f1": 0.1923076923076923
+            },
+            "rouge_2": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "rouge_l": {
+              "precision": 0.07352941176470588,
+              "recall": 0.1388888888888889,
+              "f1": 0.09615384615384615
+            }
+          },
+          "llm_summary": {
+            "status": "executed",
+            "model_id": "gemini-3.5-flash-lite",
+            "main_summary": "Securing web communication over untrusted networks requires confidentiality, data integrity, and endpoint authentication. Transport Layer Security (TLS) achieves this through a hybrid cryptosystem that combines public-key cryptography for secure authentication and key exchange with fast symmetric encryption for protecting ongoing data traffic.",
+            "summary": "## Main Summary\nSecuring web communication over untrusted networks requires confidentiality, data integrity, and endpoint authentication. Transport Layer Security (TLS) achieves this through a hybrid cryptosystem that combines public-key cryptography for secure authentication and key exchange with fast symmetric encryption for protecting ongoing data traffic.\n\n## Key Concepts\n- **Hybrid Cryptosystem**: Combines the strengths of asymmetric cryptography (for secure key exchange and authentication) and symmetric cryptography (for fast bulk data encryption).\n- **Forward Secrecy**: Ensures that session keys cannot be compromised in the future even if the long-term private key is compromised, achieved through ephemeral key exchanges.\n\n## Important Definitions\n- **Symmetric encryption algorithms**: Algorithms such as AES that encrypt bulk payloads rapidly using a single shared secret key.\n- **Public-key (asymmetric) cryptography**: Cryptography that solves key exchange by pairing a publicly shared key with a mathematically linked private key, though operations are slower than symmetric ciphers.\n- **Transport Layer Security (TLS)**: The protocol underlying HTTPS that combines symmetric and asymmetric paradigms in a hybrid cryptosystem.\n- **X.509 digital certificate**: A certificate presented by the server and signed by a trusted Certificate Authority (CA) to prove its identity during the TLS handshake.\n- **Ephemeral Diffie-Hellman key exchange (ECDHE)**: A key exchange method run by both parties during the TLS handshake to establish a shared session key with forward secrecy.\n\n## Important Points\n- Securing web communication over untrusted public networks requires confidentiality, data integrity, and endpoint authentication.\n- Distributing a single shared secret key safely over an insecure channel remains challenging for symmetric encryption alone.\n- During the TLS handshake, the server presents an X.509 digital certificate to prove its identity.\n- Once derived, fast symmetric authenticated encryption (such as AES-GCM) protects all subsequent application traffic against eavesdropping and tampering.\n\n## Revision Notes\n- Remember the dual role in TLS: asymmetric cryptography handles authentication and key establishment, while symmetric cryptography handles the fast encryption of actual application traffic.\n- Note that asymmetric operations are orders of magnitude slower than symmetric ciphers.",
+            "latency_seconds": 2.4398,
+            "rouge": {
+              "rouge_1": {
+                "precision": 0.19047619047619047,
+                "recall": 0.2222222222222222,
+                "f1": 0.20512820512820512
+              },
+              "rouge_2": {
+                "precision": 0.024390243902439025,
+                "recall": 0.02857142857142857,
+                "f1": 0.02631578947368421
+              },
+              "rouge_l": {
+                "precision": 0.14285714285714285,
+                "recall": 0.16666666666666666,
+                "f1": 0.15384615384615383
+              }
+            },
+            "full_output_rouge": {
+              "rouge_1": {
+                "precision": 0.054380664652567974,
+                "recall": 0.5,
+                "f1": 0.09809264305177112
+              },
+              "rouge_2": {
+                "precision": 0.012121212121212121,
+                "recall": 0.11428571428571428,
+                "f1": 0.021917808219178082
+              },
+              "rouge_l": {
+                "precision": 0.03927492447129909,
+                "recall": 0.3611111111111111,
+                "f1": 0.07084468664850135
+              }
+            }
+          }
+        }
+      ]
+    },
+    "sentiment": {
+      "dataset_id": "academic_sentiment_benchmark_v1",
+      "description": "60 balanced student course-feedback entries (20 Positive, 20 Negative, 20 Neutral) with realistic academic phrasing and natural edge cases.",
+      "sample_count": 60,
+      "confusion_matrix_total": 60,
+      "metrics": {
+        "accuracy": 0.8333333333333334,
+        "macro_precision": 0.8484848484848485,
+        "macro_recall": 0.8333333333333334,
+        "macro_f1": 0.8359788359788359,
+        "per_class": {
+          "Negative": {
+            "precision": 1.0,
+            "recall": 0.8,
+            "f1": 0.888888888888889,
+            "support": 20
+          },
+          "Neutral": {
+            "precision": 0.7272727272727273,
+            "recall": 0.8,
+            "f1": 0.761904761904762,
+            "support": 20
+          },
+          "Positive": {
+            "precision": 0.8181818181818182,
+            "recall": 0.9,
+            "f1": 0.8571428571428572,
+            "support": 20
+          }
+        },
+        "confusion_matrix": [
+          [
+            16,
+            4,
+            0
+          ],
+          [
+            0,
+            16,
+            4
+          ],
+          [
+            0,
+            2,
+            18
+          ]
+        ],
+        "labels": [
+          "Negative",
+          "Neutral",
+          "Positive"
+        ]
+      },
+      "per_sample": [
+        {
+          "id": "sb_01",
+          "feedback": "The TextRank walkthrough and similarity matrices made extractive summarization crystal clear!",
+          "predicted": "Positive",
+          "reference": "Positive",
+          "compound": 0.4389
+        },
+        {
+          "id": "sb_02",
+          "feedback": "Excellent course structure with practical Python labs that directly reinforce the lectures.",
+          "predicted": "Positive",
+          "reference": "Positive",
+          "compound": 0.5719
+        },
+        {
+          "id": "sb_03",
+          "feedback": "I really enjoyed how each NLP preprocessing step was visualized interactively.",
+          "predicted": "Positive",
+          "reference": "Positive",
+          "compound": 0.5563
+        },
+        {
+          "id": "sb_04",
+          "feedback": "Great instructor who patiently answered every question during the topic modeling lab.",
+          "predicted": "Positive",
+          "reference": "Positive",
+          "compound": 0.6249
+        },
+        {
+          "id": "sb_05",
+          "feedback": "The revision notes and worked TF-IDF examples were super helpful for my midterms.",
+          "predicted": "Positive",
+          "reference": "Positive",
+          "compound": 0.7717
+        },
+        {
+          "id": "sb_06",
+          "feedback": "Loved the hands-on Streamlit deployment exercise; it felt genuinely industry-relevant.",
+          "predicted": "Positive",
+          "reference": "Positive",
+          "compound": 0.5994
+        },
+        {
+          "id": "sb_07",
+          "feedback": "Well-organized syllabus, clear grading rubric, and engaging real-world datasets.",
+          "predicted": "Positive",
+          "reference": "Positive",
+          "compound": 0.6124
+        },
+        {
+          "id": "sb_08",
+          "feedback": "The comparison between classical NLP and generative LLMs was insightful and memorable.",
+          "predicted": "Neutral",
+          "reference": "Positive",
+          "compound": 0.0
+        },
+        {
+          "id": "sb_09",
+          "feedback": "Best lab course this semester—the assignments were challenging but very rewarding.",
+          "predicted": "Positive",
+          "reference": "Positive",
+          "compound": 0.8376
+        },
+        {
+          "id": "sb_10",
+          "feedback": "Clear diagrams for PageRank and LDA helped me finally grasp the intuition behind the math.",
+          "predicted": "Positive",
+          "reference": "Positive",
+          "compound": 0.3818
+        },
+        {
+          "id": "sb_11",
+          "feedback": "The teaching assistants gave prompt, constructive feedback on our code submissions.",
+          "predicted": "Neutral",
+          "reference": "Positive",
+          "compound": 0.0
+        },
+        {
+          "id": "sb_12",
+          "feedback": "Fantastic explanation of why preserving negation words matters in stopword filtering.",
+          "predicted": "Positive",
+          "reference": "Positive",
+          "compound": 0.5719
+        },
+        {
+          "id": "sb_13",
+          "feedback": "Very informative sessions with clean code templates that saved hours of setup frustration.",
+          "predicted": "Positive",
+          "reference": "Positive",
+          "compound": 0.34
+        },
+        {
+          "id": "sb_14",
+          "feedback": "I appreciated the balanced mix of theory, mathematical derivations, and coding demos.",
+          "predicted": "Positive",
+          "reference": "Positive",
+          "compound": 0.5106
+        },
+        {
+          "id": "sb_15",
+          "feedback": "Strong course overall; my confidence in building end-to-end NLP pipelines grew tremendously.",
+          "predicted": "Positive",
+          "reference": "Positive",
+          "compound": 0.765
+        },
+        {
+          "id": "sb_16",
+          "feedback": "The lecture pacing was comfortable and the case studies kept everyone interested.",
+          "predicted": "Positive",
+          "reference": "Positive",
+          "compound": 0.7184
+        },
+        {
+          "id": "sb_17",
+          "feedback": "Impressive demo of spaCy NER and regex definitions—I plan to use this in my final project.",
+          "predicted": "Positive",
+          "reference": "Positive",
+          "compound": 0.5106
+        },
+        {
+          "id": "sb_18",
+          "feedback": "Thorough documentation and helpful office hours made difficult topics approachable.",
+          "predicted": "Positive",
+          "reference": "Positive",
+          "compound": 0.0772
+        },
+        {
+          "id": "sb_19",
+          "feedback": "This lab sparked my interest in natural language processing; definitely recommend it.",
+          "predicted": "Positive",
+          "reference": "Positive",
+          "compound": 0.8658
+        },
+        {
+          "id": "sb_20",
+          "feedback": "The capstone project guidelines were clear, inspiring, and enjoyable to build.",
+          "predicted": "Positive",
+          "reference": "Positive",
+          "compound": 0.8074
+        },
+        {
+          "id": "sb_21",
+          "feedback": "The explanation of LDA topic modeling was rushed and very confusing.",
+          "predicted": "Negative",
+          "reference": "Negative",
+          "compound": -0.2944
+        },
+        {
+          "id": "sb_22",
+          "feedback": "Too much dense theory without enough worked numerical examples; I felt completely lost.",
+          "predicted": "Negative",
+          "reference": "Negative",
+          "compound": -0.3804
+        },
+        {
+          "id": "sb_23",
+          "feedback": "Audio quality in the recorded lectures was poor and frustrating to follow.",
+          "predicted": "Negative",
+          "reference": "Negative",
+          "compound": -0.7184
+        },
+        {
+          "id": "sb_24",
+          "feedback": "The lab instructions were outdated and full of broken library dependency errors.",
+          "predicted": "Negative",
+          "reference": "Negative",
+          "compound": -0.6705
+        },
+        {
+          "id": "sb_25",
+          "feedback": "Grading criteria for the mini-project were vague and unfairly applied.",
+          "predicted": "Negative",
+          "reference": "Negative",
+          "compound": -0.1027
+        },
+        {
+          "id": "sb_26",
+          "feedback": "Worst lab setup experience—we wasted half the session troubleshooting missing NLTK data.",
+          "predicted": "Negative",
+          "reference": "Negative",
+          "compound": -0.8316
+        },
+        {
+          "id": "sb_27",
+          "feedback": "The mathematical derivations for PageRank were not explained clearly at all.",
+          "predicted": "Negative",
+          "reference": "Negative",
+          "compound": -0.3089
+        },
+        {
+          "id": "sb_28",
+          "feedback": "Assignment deadlines overlapped badly with exams and felt overwhelming.",
+          "predicted": "Negative",
+          "reference": "Negative",
+          "compound": -0.4767
+        },
+        {
+          "id": "sb_29",
+          "feedback": "Slides were cluttered with wall-of-text paragraphs and almost unreadable from the back.",
+          "predicted": "Neutral",
+          "reference": "Negative",
+          "compound": 0.0
+        },
+        {
+          "id": "sb_30",
+          "feedback": "I hated how little time was spent debugging our actual code during lab hours.",
+          "predicted": "Negative",
+          "reference": "Negative",
+          "compound": -0.6369
+        },
+        {
+          "id": "sb_31",
+          "feedback": "The midterm exam tested obscure edge cases that were barely mentioned in class.",
+          "predicted": "Neutral",
+          "reference": "Negative",
+          "compound": 0.0
+        },
+        {
+          "id": "sb_32",
+          "feedback": "Disappointing feedback on our report—just a numeric score with zero explanation.",
+          "predicted": "Negative",
+          "reference": "Negative",
+          "compound": -0.4939
+        },
+        {
+          "id": "sb_33",
+          "feedback": "The course pace was painfully slow in week one and impossibly fast by week six.",
+          "predicted": "Negative",
+          "reference": "Negative",
+          "compound": -0.5267
+        },
+        {
+          "id": "sb_34",
+          "feedback": "Several starter notebooks crashed with errors and were never fixed by the staff.",
+          "predicted": "Negative",
+          "reference": "Negative",
+          "compound": -0.34
+        },
+        {
+          "id": "sb_35",
+          "feedback": "Skipping over ROUGE evaluation details left students unprepared for the viva questions.",
+          "predicted": "Neutral",
+          "reference": "Negative",
+          "compound": 0.0
+        },
+        {
+          "id": "sb_36",
+          "feedback": "The textbook reading was dry, repetitive, and difficult to connect to the coding labs.",
+          "predicted": "Negative",
+          "reference": "Negative",
+          "compound": -0.5423
+        },
+        {
+          "id": "sb_37",
+          "feedback": "Office hours were consistently overcrowded and unhelpful when debugging API timeouts.",
+          "predicted": "Neutral",
+          "reference": "Negative",
+          "compound": 0.0
+        },
+        {
+          "id": "sb_38",
+          "feedback": "Too many unannounced changes to the project rubric caused unnecessary stress.",
+          "predicted": "Negative",
+          "reference": "Negative",
+          "compound": -0.4215
+        },
+        {
+          "id": "sb_39",
+          "feedback": "The lecture on POS tagging was monotonous and failed to hold student attention.",
+          "predicted": "Negative",
+          "reference": "Negative",
+          "compound": -0.5106
+        },
+        {
+          "id": "sb_40",
+          "feedback": "I struggled with the poorly structured regex exercises and received almost no guidance.",
+          "predicted": "Negative",
+          "reference": "Negative",
+          "compound": -0.5118
+        },
+        {
+          "id": "sb_41",
+          "feedback": "The course covers tokenization, TF-IDF, TextRank, LDA, and LLM prompting across ten weeks.",
+          "predicted": "Neutral",
+          "reference": "Neutral",
+          "compound": 0.0
+        },
+        {
+          "id": "sb_42",
+          "feedback": "Weekly labs take place on Tuesday afternoons in computer lab room 304.",
+          "predicted": "Neutral",
+          "reference": "Neutral",
+          "compound": 0.0
+        },
+        {
+          "id": "sb_43",
+          "feedback": "Chapter four discusses vector space models, cosine similarity, and inverted indices.",
+          "predicted": "Neutral",
+          "reference": "Neutral",
+          "compound": 0.0
+        },
+        {
+          "id": "sb_44",
+          "feedback": "Students submit code repositories via GitHub and present a poster at the end of the term.",
+          "predicted": "Neutral",
+          "reference": "Neutral",
+          "compound": 0.0
+        },
+        {
+          "id": "sb_45",
+          "feedback": "The syllabus includes four course outcomes spanning preprocessing through generative AI.",
+          "predicted": "Neutral",
+          "reference": "Neutral",
+          "compound": 0.0
+        },
+        {
+          "id": "sb_46",
+          "feedback": "Lecture slides are uploaded to the portal in PDF format before each Monday session.",
+          "predicted": "Neutral",
+          "reference": "Neutral",
+          "compound": 0.0
+        },
+        {
+          "id": "sb_47",
+          "feedback": "The lab uses Python 3.12 with NLTK, spaCy, scikit-learn, and Streamlit.",
+          "predicted": "Neutral",
+          "reference": "Neutral",
+          "compound": 0.0
+        },
+        {
+          "id": "sb_48",
+          "feedback": "Each team consists of two students working on a domain-specific NLP mini-project.",
+          "predicted": "Neutral",
+          "reference": "Neutral",
+          "compound": 0.0
+        },
+        {
+          "id": "sb_49",
+          "feedback": "Attendance is recorded at the start of every practical session.",
+          "predicted": "Neutral",
+          "reference": "Neutral",
+          "compound": 0.0
+        },
+        {
+          "id": "sb_50",
+          "feedback": "The exam consists of multiple-choice questions and two short algorithmic derivations.",
+          "predicted": "Neutral",
+          "reference": "Neutral",
+          "compound": 0.0
+        },
+        {
+          "id": "sb_51",
+          "feedback": "The reading list contains six chapters covering classical and statistical NLP methods.",
+          "predicted": "Neutral",
+          "reference": "Neutral",
+          "compound": 0.0
+        },
+        {
+          "id": "sb_52",
+          "feedback": "Lab five focused on named entity recognition using the small English spaCy pipeline.",
+          "predicted": "Positive",
+          "reference": "Neutral",
+          "compound": 0.3818
+        },
+        {
+          "id": "sb_53",
+          "feedback": "The pace of the course is standard and aligns with other third-year electives.",
+          "predicted": "Neutral",
+          "reference": "Neutral",
+          "compound": 0.0
+        },
+        {
+          "id": "sb_54",
+          "feedback": "The material is acceptable and covers the required curriculum topics.",
+          "predicted": "Positive",
+          "reference": "Neutral",
+          "compound": 0.3182
+        },
+        {
+          "id": "sb_55",
+          "feedback": "Assignment two asks us to compute TF-IDF weights on a five-document sample corpus.",
+          "predicted": "Neutral",
+          "reference": "Neutral",
+          "compound": 0.0
+        },
+        {
+          "id": "sb_56",
+          "feedback": "Some topics were easy to follow while others required extra reading outside class.",
+          "predicted": "Positive",
+          "reference": "Neutral",
+          "compound": 0.4404
+        },
+        {
+          "id": "sb_57",
+          "feedback": "Project evaluations involve a ten-minute live demonstration followed by oral questions.",
+          "predicted": "Positive",
+          "reference": "Neutral",
+          "compound": 0.1027
+        },
+        {
+          "id": "sb_58",
+          "feedback": "The module explains both extractive and abstractive summarization workflows.",
+          "predicted": "Neutral",
+          "reference": "Neutral",
+          "compound": 0.0
+        },
+        {
+          "id": "sb_59",
+          "feedback": "Slides include diagrams of neural network layers and Bag-of-Words matrices.",
+          "predicted": "Neutral",
+          "reference": "Neutral",
+          "compound": 0.0
+        },
+        {
+          "id": "sb_60",
+          "feedback": "The course met the basic requirements listed in the university handbook.",
+          "predicted": "Neutral",
+          "reference": "Neutral",
+          "compound": 0.0
+        }
+      ]
+    },
+    "concepts": {
+      "dataset_id": "academic_concepts_benchmark_v1",
+      "description": "10 educational paragraphs across AI, NLP, Databases, OS, and Networks with human-annotated ground-truth named entities and formal definitions.",
+      "sample_count": 10,
+      "entity_metrics": {
+        "precision": 0.8857142857142857,
+        "recall": 0.9393939393939394,
+        "f1": 0.9117647058823529,
+        "true_positives": 31,
+        "false_positives": 4,
+        "false_negatives": 2,
+        "predicted_total": 35,
+        "reference_total": 33
+      },
+      "entity_macro_metrics": {
+        "precision": 0.9066666666666666,
+        "recall": 0.95,
+        "f1": 0.9210317460317461
+      },
+      "definition_metrics": {
+        "precision": 1.0,
+        "recall": 0.9,
+        "f1": 0.9473684210526316,
+        "true_positives": 9,
+        "false_positives": 0,
+        "false_negatives": 1,
+        "predicted_total": 9,
+        "reference_total": 10
+      },
+      "definition_macro_metrics": {
+        "precision": 0.9,
+        "recall": 0.9,
+        "f1": 0.9
+      },
+      "per_sample": [
+        {
+          "id": "con_01",
+          "predicted_entities": [
+            "Artificial Intelligence",
+            "Alan Turing",
+            "the Turing Test",
+            "1950",
+            "the University of Manchester"
+          ],
+          "reference_entities": [
+            "Alan Turing",
+            "the Turing Test",
+            "1950",
+            "the University of Manchester"
+          ],
+          "entity_metrics": {
+            "precision": 0.8,
+            "recall": 1.0,
+            "f1": 0.888888888888889,
+            "true_positives": 4
+          },
+          "predicted_definitions": [
+            "Artificial Intelligence"
+          ],
+          "reference_definitions": [
+            "Artificial Intelligence"
+          ],
+          "definition_metrics": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "true_positives": 1
+          }
+        },
+        {
+          "id": "con_02",
+          "predicted_entities": [
+            "Claude Shannon",
+            "Bell Labs",
+            "1948"
+          ],
+          "reference_entities": [
+            "Claude Shannon",
+            "Bell Labs",
+            "1948"
+          ],
+          "entity_metrics": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "true_positives": 3
+          },
+          "predicted_definitions": [
+            "Information Theory"
+          ],
+          "reference_definitions": [
+            "Information Theory"
+          ],
+          "definition_metrics": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "true_positives": 1
+          }
+        },
+        {
+          "id": "con_03",
+          "predicted_entities": [
+            "Stanford University",
+            "Google"
+          ],
+          "reference_entities": [
+            "Stanford University",
+            "Google"
+          ],
+          "entity_metrics": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "true_positives": 2
+          },
+          "predicted_definitions": [
+            "Supervised learning"
+          ],
+          "reference_definitions": [
+            "Supervised learning"
+          ],
+          "definition_metrics": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "true_positives": 1
+          }
+        },
+        {
+          "id": "con_04",
+          "predicted_entities": [
+            "Geoffrey Hinton",
+            "the University of Toronto"
+          ],
+          "reference_entities": [
+            "Geoffrey Hinton",
+            "the University of Toronto"
+          ],
+          "entity_metrics": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "true_positives": 2
+          },
+          "predicted_definitions": [
+            "Backpropagation"
+          ],
+          "reference_definitions": [
+            "Backpropagation"
+          ],
+          "definition_metrics": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "true_positives": 1
+          }
+        },
+        {
+          "id": "con_05",
+          "predicted_entities": [
+            "WordNet",
+            "Princeton University",
+            "1985"
+          ],
+          "reference_entities": [
+            "WordNet",
+            "Princeton University",
+            "1985"
+          ],
+          "entity_metrics": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "true_positives": 3
+          },
+          "predicted_definitions": [
+            "Lemmatization"
+          ],
+          "reference_definitions": [
+            "Lemmatization"
+          ],
+          "definition_metrics": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "true_positives": 1
+          }
+        },
+        {
+          "id": "con_06",
+          "predicted_entities": [
+            "Edgar Codd",
+            "IBM",
+            "1970"
+          ],
+          "reference_entities": [
+            "Edgar Codd",
+            "IBM",
+            "1970"
+          ],
+          "entity_metrics": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "true_positives": 3
+          },
+          "predicted_definitions": [
+            "relational model"
+          ],
+          "reference_definitions": [
+            "relational model"
+          ],
+          "definition_metrics": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "true_positives": 1
+          }
+        },
+        {
+          "id": "con_07",
+          "predicted_entities": [
+            "RAM",
+            "MIT",
+            "the 1960s"
+          ],
+          "reference_entities": [
+            "Multics",
+            "Unix",
+            "MIT",
+            "the 1960s"
+          ],
+          "entity_metrics": {
+            "precision": 0.6666666666666666,
+            "recall": 0.5,
+            "f1": 0.5714285714285715,
+            "true_positives": 2
+          },
+          "predicted_definitions": [
+            "Virtual memory"
+          ],
+          "reference_definitions": [
+            "Virtual memory"
+          ],
+          "definition_metrics": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "true_positives": 1
+          }
+        },
+        {
+          "id": "con_08",
+          "predicted_entities": [
+            "Hypertext Transfer Protocol",
+            "Tim Berners-Lee",
+            "the World Wide Web",
+            "CERN",
+            "1989"
+          ],
+          "reference_entities": [
+            "Tim Berners-Lee",
+            "CERN",
+            "1989"
+          ],
+          "entity_metrics": {
+            "precision": 0.6,
+            "recall": 1.0,
+            "f1": 0.7499999999999999,
+            "true_positives": 3
+          },
+          "predicted_definitions": [
+            "Hypertext Transfer Protocol"
+          ],
+          "reference_definitions": [
+            "Hypertext Transfer Protocol"
+          ],
+          "definition_metrics": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "true_positives": 1
+          }
+        },
+        {
+          "id": "con_09",
+          "predicted_entities": [
+            "Python",
+            "Explosion",
+            "Microsoft"
+          ],
+          "reference_entities": [
+            "Python",
+            "Explosion",
+            "Microsoft"
+          ],
+          "entity_metrics": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "true_positives": 3
+          },
+          "predicted_definitions": [],
+          "reference_definitions": [
+            "Tokenization"
+          ],
+          "definition_metrics": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "true_positives": 0
+          }
+        },
+        {
+          "id": "con_10",
+          "predicted_entities": [
+            "Whitfield Diffie",
+            "Martin Hellman",
+            "1976",
+            "RSA",
+            "MIT",
+            "1977"
+          ],
+          "reference_entities": [
+            "Whitfield Diffie",
+            "Martin Hellman",
+            "1976",
+            "RSA",
+            "MIT",
+            "1977"
+          ],
+          "entity_metrics": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "true_positives": 6
+          },
+          "predicted_definitions": [
+            "Public-key cryptography"
+          ],
+          "reference_definitions": [
+            "Public-key cryptography"
+          ],
+          "definition_metrics": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "true_positives": 1
+          }
+        }
+      ],
+      "warnings": [],
+      "matching_criteria": "Case-insensitive, whitespace-normalized exact string match on entity text and definition concept (micro-averaged across all benchmark paragraphs)."
+    },
+    "topics": {
+      "dataset_id": "academic_topics_benchmark_v1",
+      "description": "15 multi-sentence educational chunks spanning 3 distinct CS/AI sub-domains (Machine Learning & Neural Networks, Relational Databases, Computer Networks) for LDA evaluation.",
+      "document_count": 15,
+      "n_topics": 3,
+      "bow_matrix_shape": [
+        15,
+        395
+      ],
+      "topics": [
+        {
+          "topic_id": 0,
+          "keywords": [
+            "control",
+            "tables",
+            "congestion",
+            "packet",
+            "shared",
+            "internet",
+            "records",
+            "routing",
+            "sql",
+            "window"
+          ],
+          "weights": [
+            0.01198287464087415,
+            0.011982832729324051,
+            0.009218997470252958,
+            0.009218567811607308,
+            0.009217464102723744,
+            0.009217452536434686,
+            0.006456051134071737,
+            0.006455102362668995,
+            0.006454441857664698,
+            0.0064520724784672065
+          ]
+        },
+        {
+          "topic_id": 1,
+          "keywords": [
+            "networks",
+            "batch",
+            "layer",
+            "transport",
+            "normalization",
+            "hierarchical",
+            "network",
+            "protocol",
+            "ip",
+            "multiple"
+          ],
+          "weights": [
+            0.011903850258699163,
+            0.011859680524689659,
+            0.006787982204128295,
+            0.00678748874819184,
+            0.006787249880850116,
+            0.006787201447556647,
+            0.006786707993651764,
+            0.006786258738949235,
+            0.006786258738949235,
+            0.00678589481464593
+          ]
+        },
+        {
+          "topic_id": 2,
+          "keywords": [
+            "model",
+            "layers",
+            "feature",
+            "pages",
+            "high",
+            "training",
+            "validation",
+            "table",
+            "database",
+            "scans"
+          ],
+          "weights": [
+            0.012948351159878076,
+            0.009962135767135368,
+            0.009962075400850671,
+            0.009960222924759904,
+            0.00996018183210029,
+            0.009960146537685458,
+            0.009960133468959008,
+            0.006978898368127695,
+            0.006978186116203641,
+            0.006972039383473517
+          ]
+        }
+      ],
+      "document_topics": [
+        {
+          "chunk_id": 0,
+          "source_index": 0,
+          "domain": "Machine Learning & Neural Networks",
+          "dominant_topic": 2,
+          "topic_distribution": [
+            0.010849205329417994,
+            0.010891278926867585,
+            0.9782595157437144
+          ]
+        },
+        {
+          "chunk_id": 1,
+          "source_index": 1,
+          "domain": "Machine Learning & Neural Networks",
+          "dominant_topic": 1,
+          "topic_distribution": [
+            0.009944635571329874,
+            0.9798748307889374,
+            0.010180533639732793
+          ]
+        },
+        {
+          "chunk_id": 2,
+          "source_index": 2,
+          "domain": "Machine Learning & Neural Networks",
+          "dominant_topic": 2,
+          "topic_distribution": [
+            0.009850347539863908,
+            0.01005169263455099,
+            0.9800979598255852
+          ]
+        },
+        {
+          "chunk_id": 3,
+          "source_index": 3,
+          "domain": "Machine Learning & Neural Networks",
+          "dominant_topic": 2,
+          "topic_distribution": [
+            0.009689023714696158,
+            0.009959537849336432,
+            0.9803514384359674
+          ]
+        },
+        {
+          "chunk_id": 4,
+          "source_index": 4,
+          "domain": "Machine Learning & Neural Networks",
+          "dominant_topic": 2,
+          "topic_distribution": [
+            0.010513800927669655,
+            0.010571258794396491,
+            0.9789149402779338
+          ]
+        },
+        {
+          "chunk_id": 5,
+          "source_index": 5,
+          "domain": "Relational Databases & SQL",
+          "dominant_topic": 0,
+          "topic_distribution": [
+            0.9786511630210813,
+            0.010613829874746917,
+            0.010735007104171681
+          ]
+        },
+        {
+          "chunk_id": 6,
+          "source_index": 6,
+          "domain": "Relational Databases & SQL",
+          "dominant_topic": 2,
+          "topic_distribution": [
+            0.009926239474128727,
+            0.00962315356875783,
+            0.9804506069571134
+          ]
+        },
+        {
+          "chunk_id": 7,
+          "source_index": 7,
+          "domain": "Relational Databases & SQL",
+          "dominant_topic": 2,
+          "topic_distribution": [
+            0.00827409999158433,
+            0.0080600007570465,
+            0.9836658992513692
+          ]
+        },
+        {
+          "chunk_id": 8,
+          "source_index": 8,
+          "domain": "Relational Databases & SQL",
+          "dominant_topic": 0,
+          "topic_distribution": [
+            0.9808301498845178,
+            0.009496065925186772,
+            0.009673784190295461
+          ]
+        },
+        {
+          "chunk_id": 9,
+          "source_index": 9,
+          "domain": "Relational Databases & SQL",
+          "dominant_topic": 0,
+          "topic_distribution": [
+            0.9787006949342443,
+            0.010531810072015823,
+            0.01076749499373999
+          ]
+        },
+        {
+          "chunk_id": 10,
+          "source_index": 10,
+          "domain": "Computer Networks & Protocols",
+          "dominant_topic": 1,
+          "topic_distribution": [
+            0.010538406068923306,
+            0.9792866433606056,
+            0.01017495057047118
+          ]
+        },
+        {
+          "chunk_id": 11,
+          "source_index": 11,
+          "domain": "Computer Networks & Protocols",
+          "dominant_topic": 0,
+          "topic_distribution": [
+            0.9804892957150636,
+            0.009873916624362362,
+            0.009636787660574176
+          ]
+        },
+        {
+          "chunk_id": 12,
+          "source_index": 12,
+          "domain": "Computer Networks & Protocols",
+          "dominant_topic": 0,
+          "topic_distribution": [
+            0.9810673221129801,
+            0.009542481251666669,
+            0.009390196635353227
+          ]
+        },
+        {
+          "chunk_id": 13,
+          "source_index": 13,
+          "domain": "Computer Networks & Protocols",
+          "dominant_topic": 0,
+          "topic_distribution": [
+            0.9794298178467109,
+            0.010382496609465419,
+            0.010187685543823674
+          ]
+        },
+        {
+          "chunk_id": 14,
+          "source_index": 14,
+          "domain": "Computer Networks & Protocols",
+          "dominant_topic": 0,
+          "topic_distribution": [
+            0.9792594380440102,
+            0.010552988385554584,
+            0.01018757357043525
+          ]
+        }
+      ],
+      "vocabulary_size": 395,
+      "perplexity": 605.100534733476,
+      "cluster_purity": 0.6,
+      "reproducible": true,
+      "warnings": [],
+      "note": "Perplexity does not establish human interpretability or semantic coherence."
+    }
+  },
+  "missing_evaluation_data": [
+    "LLM evaluation is skipped unless GEMINI_API_KEY is configured."
+  ],
+  "limitations": [
+    "Evaluation datasets are curated academic benchmarks rather than published third-party corpora.",
+    "ROUGE uses whitespace tokenization and does not use stemming.",
+    "Concept matching uses case-insensitive exact normalized string match.",
+    "Perplexity is not semantic coherence."
+  ]
+}

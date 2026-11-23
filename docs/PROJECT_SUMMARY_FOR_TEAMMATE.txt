@@ -1,0 +1,221 @@
+================================================================================
+PROJECT HANDOVER & OVERVIEW: EDUCATIONAL CONTENT SUMMARIZATION SYSTEM
+================================================================================
+
+Course        : 2311217L - Natural Language Processing Lab
+Topic         : Educational Content Summarization System
+Key Concepts  : Extractive Summarization (TextRank) &
+                Abstractive Summarization (Google Gemini LLM)
+Team Members  : 1. SWAPNIL SANTOSH AKHADE
+                2. BANSUDE SUDARSHAN SAKHARAM
+GitHub Repo   : https://github.com/SwapnilAkhade824/educational-content-summarization
+
+
+--------------------------------------------------------------------------------
+1. WHAT THE PROJECT DOES (ELEVATOR PITCH)
+--------------------------------------------------------------------------------
+Students and educators work with lengthy PDFs and study notes. Pure AI chatbots
+act like a "black box" -- they output a summary without showing how the text
+was analyzed or processed.
+
+Our system solves this by combining transparent Classical NLP algorithms with
+Generative AI inside an interactive Streamlit web app (app.py):
+
+  1) Extractive Summarization (Classical NLP - TextRank):
+     Scores and selects the most important original sentences directly from the
+     document using TF-IDF + Cosine Similarity + PageRank, displaying every
+     intermediate matrix, graph step, and score.
+
+  2) Abstractive Summarization (Cloud AI - Google Gemini):
+     Uses engineered, hallucination-guarded prompts over the extracted text to
+     generate human-like Short Summaries, Detailed Summaries, Bullet Notes,
+     Key Definitions, and Exam Revision Notes.
+
+
+--------------------------------------------------------------------------------
+2. COURSE OUTCOME (CO1-CO4) MAPPING
+--------------------------------------------------------------------------------
+- CO1 (Text Extraction, Preprocessing, Cleaning & Vectorization):
+  Implemented in Stages 1-7 (src/extraction, src/preprocessing) using PyMuPDF,
+  NLTK sentence/word tokenization, Unicode NFC & regex cleaning, stopword removal
+  (preserving negations like "not", "no", "never"), POS-aware WordNet
+  lemmatization, and scikit-learn TF-IDF vectorization.
+
+- CO2 (Sentiment Analysis & Information Extraction):
+  Implemented in Stage 9 (src/information_extraction) using spaCy
+  (en_core_web_sm) NER, noun-chunk keyphrases, and regex definition patterns;
+  plus an isolated Student Feedback Sentiment Analysis section (src/sentiment)
+  using NLTK VADER.
+
+- CO3 (Topic Modelling with Cloud-Based AI Services):
+  Implemented in Stage 10 (src/topic_modeling) using scikit-learn
+  CountVectorizer + LatentDirichletAllocation (LDA), paired with optional
+  Google Gemini cloud interpretation of discovered topics.
+
+- CO4 (Generative AI / LLM, Prompt Engineering & Integration):
+  Implemented in Stage 11 (src/summarization) via the google-genai SDK with
+  5 versioned prompt templates (prompts.py), sentence-aligned chunking for
+  long documents, and automatic retries.
+
+
+--------------------------------------------------------------------------------
+3. THE 11-STAGE PIPELINE IN THE STREAMLIT APP
+--------------------------------------------------------------------------------
+In app.py, users can click "Run Complete Pipeline" in the sidebar or click
+"Run" on any individual stage (missing prerequisite stages run automatically):
+
+  Stage 1  - Text Extraction
+             Extracts raw text, page count, word/character count, and warnings
+             from uploaded PDF (PyMuPDF) or TXT files.
+
+  Stage 2  - Sentence Tokenization
+             Segments the extracted text into a numbered list of sentences
+             using NLTK Punkt.
+
+  Stage 3  - Word Tokenization
+             Splits text into word tokens using NLTK word_tokenize.
+
+  Stage 4  - Text Cleaning
+             Applies Unicode NFC normalization and regex cleaning, displaying
+             Original vs. Cleaned text side by side.
+
+  Stage 5  - Stopword Removal
+             Removes standard English stopwords while keeping negation words
+             (no, not, never) so meaning is preserved. Displays removed vs.
+             remaining tokens.
+
+  Stage 6  - Lemmatization
+             Reduces tokens to base dictionary forms using a POS-aware WordNet
+             lemmatizer, displayed in an Original -> Lemma table.
+
+  Stage 7  - TF-IDF Vectorization
+             Builds the TF-IDF feature matrix (scikit-learn TfidfVectorizer)
+             and displays vocabulary size, matrix shape, matrix values, and top
+             weighted terms.
+
+  Stage 8  - TextRank Summarization (Extractive)
+             Computes a pairwise sentence cosine similarity matrix from TF-IDF
+             vectors, builds a graph in networkx, runs PageRank, ranks and
+             selects the top sentences in original document order, and shows the
+             compression ratio.
+
+  Stage 9  - Information Extraction
+             Extracts Named Entities with labels and character offsets (spaCy
+             en_core_web_sm), noun-chunk keyphrases, and rule-based definitions.
+
+  Stage 10 - LDA Topic Modelling
+             Builds a Bag-of-Words matrix (CountVectorizer) on document chunks,
+             discovers latent topics with scikit-learn LDA, shows topic keyword
+             weights and document-topic distributions, plus optional Gemini
+             topic interpretation.
+
+  Stage 11 - Gemini Summarization (Abstractive)
+             Generates 5 tabbed outputs via Google Gemini:
+               1. Short Summary
+               2. Detailed Summary
+               3. Bullet-Point Notes
+               4. Important Definitions
+               5. Exam Revision Notes
+
+  Additional Sections:
+  - Student Feedback Sentiment Analysis (VADER):
+    Evaluates single feedback or batch feedback into Positive, Neutral, or
+    Negative labels with pos/neg/neu/compound scores and distribution metrics.
+  - Export Study Notes:
+    Previews and downloads combined Markdown study notes (study_notes.md).
+
+
+--------------------------------------------------------------------------------
+4. KEY FILES & PROJECT STRUCTURE
+--------------------------------------------------------------------------------
+educational_content_summarization/
+  app.py                          Main Streamlit dashboard UI
+  .streamlit/config.toml          Custom light/dark academic theme
+  requirements.txt                Python dependencies (includes en_core_web_sm)
+  pyproject.toml                  Project metadata and author list
+  .env.example                    Environment template (real .env is ignored)
+  DEPLOYMENT.md                   Streamlit Community Cloud deployment guide
+  src/
+    extraction/                   PDF and TXT extraction
+    preprocessing/                Cleaning, tokenization, lemmatization, TF-IDF
+    summarization/                TextRank (extractive), Gemini client & prompts
+    information_extraction/       spaCy NER, keyphrases, definition patterns
+    topic_modeling/               LDA topic modelling
+    sentiment/                    VADER sentiment analysis
+    evaluation/                   ROUGE, classification metrics, concept F1
+    ui/                           Markdown export helpers
+    utils/                        Configuration and logging
+  tests/                          Pytest automated test suite (202 tests)
+  data/raw/                       Sample 7-page educational test PDF
+  data/evaluation/                Demo evaluation datasets, templates & report
+  docs/                           Architecture, algorithms, dataset, demo script
+                                  (docs/DEMO_SCRIPT.md), and poster content
+                                  (docs/POSTER_CONTENT.md)
+  scripts/                        Optional Gemini connection check script
+  screenshots/                    Application output screenshots
+  certificate/                    Team AWS NLP Lab certificates:
+                                    - Swapnil_Santosh_Akhade_Certificate.pdf
+                                    - Bansude_Sudarshan_Sakharam_Certificate.pdf
+                                      (pending upload)
+
+
+--------------------------------------------------------------------------------
+5. HOW TO RUN IT LOCALLY (WINDOWS POWERSHELL)
+--------------------------------------------------------------------------------
+1. Clone the repository:
+     git clone https://github.com/SwapnilAkhade824/educational-content-summarization.git
+     cd educational-content-summarization
+
+2. Create and activate a virtual environment:
+     python -m venv .venv
+     .\.venv\Scripts\Activate.ps1
+
+3. Install dependencies:
+     pip install -r requirements.txt
+
+4. (Optional) Configure Gemini API key:
+     Copy-Item .env.example .env
+   Open .env and add your GEMINI_API_KEY from Google AI Studio.
+   (Note: Stages 1-10 and VADER sentiment analysis work offline even without
+    an API key; only Gemini features require the key and internet access.)
+
+5. Run the Streamlit app:
+     streamlit run app.py
+
+6. Run the automated test suite:
+     python -m pytest -q
+
+
+--------------------------------------------------------------------------------
+6. COMMON VIVA QUESTIONS & QUICK ANSWERS
+--------------------------------------------------------------------------------
+Q1: What is the difference between Stage 8 (TextRank) and Stage 11 (Gemini)?
+A : Stage 8 is EXTRACTIVE -- it mathematically ranks and selects existing
+    sentences verbatim using TF-IDF cosine similarity and PageRank (no
+    hallucination). Stage 11 is ABSTRACTIVE -- it uses Google Gemini with
+    strict prompt templates to synthesize study notes, bullet points, and
+    revision notes.
+
+Q2: Why do you keep words like "not", "no", and "never" during stopword removal?
+A : Standard stopword lists remove negation words, which can invert the meaning
+    of educational definitions or feedback. Preserving negations keeps semantic
+    meaning accurate.
+
+Q3: Why is Student Feedback Sentiment Analysis separate from the 11 stages?
+A : Educational textbook/lecture content is objective and informational, whereas
+    VADER sentiment analysis is meant for subjective opinion text like student
+    feedback on a lecture or course.
+
+Q4: What happens if the internet or Gemini API key is unavailable during demo?
+A : Stages 1-10 (Extraction, Preprocessing, TF-IDF, TextRank, NER/IE, LDA) and
+    VADER sentiment analysis run 100% locally and offline. Only Gemini-powered
+    outputs are skipped with a clear status indicator.
+
+
+--------------------------------------------------------------------------------
+7. NEXT STEP FOR TOMORROW
+--------------------------------------------------------------------------------
+Please add your AWS NLP Lab certificate PDF to the repository at:
+  certificate/Bansude_Sudarshan_Sakharam_Certificate.pdf
+(.gitignore is already configured to track certificate/*.pdf) and push it to GitHub.
+================================================================================

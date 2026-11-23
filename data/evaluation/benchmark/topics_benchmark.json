@@ -1,0 +1,87 @@
+{
+  "dataset_id": "academic_topics_benchmark_v1",
+  "description": "15 multi-sentence educational chunks spanning 3 distinct CS/AI sub-domains (Machine Learning & Neural Networks, Relational Databases, Computer Networks) for LDA evaluation.",
+  "n_topics": 3,
+  "domains": [
+    "Machine Learning & Neural Networks",
+    "Relational Databases & SQL",
+    "Computer Networks & Protocols"
+  ],
+  "documents": [
+    {
+      "id": "top_01",
+      "domain": "Machine Learning & Neural Networks",
+      "text": "Supervised machine learning trains statistical models on labeled training datasets to minimize prediction error. Gradient descent updates model weights iteratively along the negative gradient of the loss function. Cross-validation evaluates generalization accuracy across held-out validation folds."
+    },
+    {
+      "id": "top_02",
+      "domain": "Machine Learning & Neural Networks",
+      "text": "Deep neural networks stack multiple hidden layers with nonlinear ReLU activation functions to learn hierarchical feature representations. Backpropagation applies the chain rule to compute exact weight gradients from the output loss. Batch normalization stabilizes layer activations during mini-batch optimization."
+    },
+    {
+      "id": "top_03",
+      "domain": "Machine Learning & Neural Networks",
+      "text": "Overfitting happens when a high-variance neural model memorizes training noise instead of underlying statistical patterns. L2 weight decay regularization and dropout layers constrain model capacity to improve test generalization. Early stopping halts training epochs once validation loss begins increasing."
+    },
+    {
+      "id": "top_04",
+      "domain": "Machine Learning & Neural Networks",
+      "text": "Convolutional neural networks apply learnable spatial filters across image tensors to detect edges, textures, and object shapes. Pooling layers downsample feature maps to provide translation invariance and lower parameter counts. Softmax output layers convert final logits into normalized class probabilities."
+    },
+    {
+      "id": "top_05",
+      "domain": "Machine Learning & Neural Networks",
+      "text": "Unsupervised clustering algorithms such as k-means partition unlabeled feature vectors into compact groups by minimizing Euclidean distance to centroids. Principal component analysis projects high-dimensional datasets onto orthogonal variance axes. Feature scaling normalizes numerical attributes before model fitting."
+    },
+    {
+      "id": "top_06",
+      "domain": "Relational Databases & SQL",
+      "text": "Relational databases organize structured records into normalized tables linked by primary keys and foreign key constraints. SQL queries retrieve filtered tuples using SELECT, JOIN, GROUP BY, and HAVING clauses. Schema normalization eliminates update anomalies and redundant column storage."
+    },
+    {
+      "id": "top_07",
+      "domain": "Relational Databases & SQL",
+      "text": "Database transactions preserve ACID properties covering atomicity, consistency, isolation, and durability across concurrent workloads. Write-ahead logging writes redo and undo log records to disk before dirty buffer pages flush. Crash recovery replays committed log entries to restore database state."
+    },
+    {
+      "id": "top_08",
+      "domain": "Relational Databases & SQL",
+      "text": "B-plus tree indexes accelerate SQL point lookups and ordered range scans across disk-resident table pages. Internal index nodes hold high-fanout routing keys while linked leaf pages store sorted tuple pointers. Cost-based query optimizers select index scans versus hash joins using table cardinality statistics."
+    },
+    {
+      "id": "top_09",
+      "domain": "Relational Databases & SQL",
+      "text": "Concurrency control prevents dirty reads and lost updates when multiple database transactions access shared table rows simultaneously. Two-phase locking acquires shared read locks and exclusive write locks before releasing them at commit. Multiversion concurrency control maintains row snapshots so readers do not block writers."
+    },
+    {
+      "id": "top_10",
+      "domain": "Relational Databases & SQL",
+      "text": "Distributed SQL databases partition large relational tables horizontally across sharded storage nodes for scalable throughput. Consensus replication protocols keep replica tables synchronized across server failures. Materialized views precompute aggregate query results to accelerate analytical reporting workloads."
+    },
+    {
+      "id": "top_11",
+      "domain": "Computer Networks & Protocols",
+      "text": "The TCP transport protocol guarantees reliable ordered byte delivery across IP packet networks through sequence numbers and cumulative acknowledgments. Endpoints establish connections via a three-way SYN handshake before transmitting payload segments. Adaptive retransmission timers resend packets lost during network congestion."
+    },
+    {
+      "id": "top_12",
+      "domain": "Computer Networks & Protocols",
+      "text": "IP routers forward datagrams across autonomous internet networks by consulting longest-prefix routing tables. Border Gateway Protocol exchanges inter-domain routing paths between internet service providers. Packet switching multiplexes traffic dynamically across shared fiber links without reserving dedicated circuits."
+    },
+    {
+      "id": "top_13",
+      "domain": "Computer Networks & Protocols",
+      "text": "TCP congestion control regulates packet transmission rates using slow start, congestion avoidance, and fast recovery phases. When intermediate router queues overflow and drop packets, the sender halves its congestion window to relieve bottleneck links. Receiver flow control advertises available buffer window sizes."
+    },
+    {
+      "id": "top_14",
+      "domain": "Computer Networks & Protocols",
+      "text": "Domain Name System servers resolve human-readable hostnames into numeric IPv4 and IPv6 network addresses through hierarchical DNS queries. Local recursive resolvers cache DNS records according to time-to-live headers to reduce lookup latency. Authoritative nameservers publish zone mappings for internet domains."
+    },
+    {
+      "id": "top_15",
+      "domain": "Computer Networks & Protocols",
+      "text": "Transport Layer Security encrypts HTTP packets over public networks using X.509 certificates and ephemeral Diffie-Hellman key exchange. Authenticated symmetric ciphers protect socket streams against packet eavesdropping and tampering. Modern web browsers negotiate TLS handshakes before sending HTTP requests."
+    }
+  ]
+}

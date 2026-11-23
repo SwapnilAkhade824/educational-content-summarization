@@ -14,7 +14,7 @@ from evaluation.metrics import (
     rouge_n,
     rouge_scores,
 )
-from evaluation.runner import run_evaluation
+from evaluation.runner import _extract_main_summary, _macro_average_rouge, run_evaluation
 
 
 def test_rouge_n() -> None:
@@ -85,6 +85,26 @@ def test_run_evaluation_writes_report() -> None:
 
 
 def test_run_evaluation_llm_skipped_without_config() -> None:
-    report = run_evaluation(write_report=False)
+    report = run_evaluation(write_report=False, skip_llm=True)
     llm_status = report["results"]["summarization"]["samples"][0]["llm_summary"]
     assert llm_status["status"] in {"skipped", "executed", "failed"}
+
+
+def test_extract_main_summary_and_macro_rouge() -> None:
+    md = "## Main Summary\nConcise overview of ML.\n\n## Key Concepts\n- Bias"
+    assert _extract_main_summary(md) == "Concise overview of ML."
+    avg = _macro_average_rouge([rouge_scores("a b", "a b"), rouge_scores("a b", "c d")])
+    assert avg is not None
+    assert avg["rouge_1"]["f1"] == pytest.approx(0.5)
+
+
+def test_run_benchmark_suite_offline() -> None:
+    report = run_evaluation(write_report=False, suite="benchmark", skip_llm=True)
+    assert report["suite"] == "benchmark"
+    assert report["sample_counts"]["summarization"] == 12
+    assert report["sample_counts"]["sentiment"] == 60
+    assert report["sample_counts"]["concepts"] == 10
+    assert report["sample_counts"]["topics"] == 15
+    cm = report["results"]["sentiment"]["metrics"]["confusion_matrix"]
+    assert sum(sum(row) for row in cm) == 60
+    assert report["results"]["topics"]["reproducible"] is True

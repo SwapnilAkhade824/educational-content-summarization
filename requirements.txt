@@ -20,9 +20,6 @@ networkx>=3.0
 # Google Gemini (Generative AI)
 google-genai>=1.0.0
 
-# Used by test doubles for LLM error mapping
-openai>=1.0.0
-
 # Utilities
 python-dotenv>=1.0.0
 

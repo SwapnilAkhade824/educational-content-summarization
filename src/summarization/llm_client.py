@@ -22,36 +22,6 @@ except Exception:  # pragma: no cover - google-genai is a declared dependency
     genai_types = None  # type: ignore[assignment]
     genai_errors = None  # type: ignore[assignment]
 
-# Optional openai imports retained for backward-compatible test doubles.
-try:
-    from openai import (
-        APIConnectionError as _OpenAIAPIConnectionError,
-        APIError as _OpenAIAPIError,
-        APIResponseValidationError as _OpenAIAPIResponseValidationError,
-        APIStatusError as _OpenAIAPIStatusError,
-        APITimeoutError as _OpenAIAPItimeoutError,
-        AuthenticationError as _OpenAIAuthenticationError,
-        BadRequestError as _OpenAIBadRequestError,
-        InternalServerError as _OpenAIInternalServerError,
-        NotFoundError as _OpenAINotFoundError,
-        PermissionDeniedError as _OpenAIPermissionDeniedError,
-        RateLimitError as _OpenAIRateLimitError,
-        UnprocessableEntityError as _OpenAIUnprocessableEntityError,
-    )
-except Exception:  # pragma: no cover - openai is optional
-    _OpenAIAPIConnectionError = Exception  # type: ignore[assignment]
-    _OpenAIAPIError = Exception  # type: ignore[assignment]
-    _OpenAIAPIResponseValidationError = Exception  # type: ignore[assignment]
-    _OpenAIAPIStatusError = Exception  # type: ignore[assignment]
-    _OpenAIAPItimeoutError = Exception  # type: ignore[assignment]
-    _OpenAIAuthenticationError = Exception  # type: ignore[assignment]
-    _OpenAIBadRequestError = Exception  # type: ignore[assignment]
-    _OpenAIInternalServerError = Exception  # type: ignore[assignment]
-    _OpenAINotFoundError = Exception  # type: ignore[assignment]
-    _OpenAIPermissionDeniedError = Exception  # type: ignore[assignment]
-    _OpenAIRateLimitError = Exception  # type: ignore[assignment]
-    _OpenAIUnprocessableEntityError = Exception  # type: ignore[assignment]
-
 try:
     import httpx
 except Exception:  # pragma: no cover
@@ -214,9 +184,6 @@ def _map_exception(exc: Exception) -> LLMClientError:
         if connect_exc is not None and isinstance(exc, connect_exc):
             return LLMClientError(f"Network or connection error: {exc}")
 
-    if isinstance(exc, _OpenAIAPItimeoutError):
-        return LLMClientError(f"Client-side request timed out: {exc}")
-
     # Gemini / google-genai errors.
     if genai_errors is not None:
         client_error_cls = getattr(genai_errors, "ClientError", None)
@@ -250,34 +217,6 @@ def _map_exception(exc: Exception) -> LLMClientError:
         if api_error_cls is not None and isinstance(exc, api_error_cls):
             status = getattr(exc, "code", None)
             return LLMClientError(f"LLM API error ({status}): {exc}")
-
-    # OpenAI-compatible errors (for test doubles / legacy clients).
-    if isinstance(exc, (_OpenAIAuthenticationError, _OpenAIPermissionDeniedError)):
-        return LLMClientError(f"Authentication failed: {exc}")
-    if isinstance(exc, _OpenAINotFoundError):
-        return LLMClientError(f"Invalid model or request: model not found or invalid endpoint: {exc}")
-    if isinstance(exc, (_OpenAIBadRequestError, _OpenAIUnprocessableEntityError)):
-        message = str(exc)
-        lower = message.lower()
-        if "token" in lower or "context" in lower or "length" in lower:
-            return LLMClientError(f"Token limit exceeded: {message}")
-        if "param" in lower or "unsupported" in lower:
-            return LLMClientError(f"Unsupported API parameter: {message}")
-        return LLMClientError(f"Invalid request: {message}")
-    if isinstance(exc, _OpenAIRateLimitError):
-        return LLMClientError(f"Rate limited (quota exceeded): {exc}")
-    if isinstance(exc, _OpenAIAPIConnectionError):
-        return LLMClientError(f"Network or connection error: {exc}")
-    if isinstance(exc, _OpenAIInternalServerError):
-        return LLMClientError(f"Service unavailable: {exc}")
-    if isinstance(exc, _OpenAIAPIResponseValidationError):
-        return LLMClientError(f"Malformed LLM response: {exc}")
-    if isinstance(exc, _OpenAIAPIStatusError):
-        status = getattr(exc, "status_code", None)
-        return LLMClientError(f"LLM API error ({status}): {exc}")
-    if isinstance(exc, _OpenAIAPIError):
-        status = getattr(exc, "status_code", None)
-        return LLMClientError(f"LLM API error ({status}): {exc}")
 
     if isinstance(exc, LLMClientError):
         return exc
@@ -317,19 +256,14 @@ def _is_transient(exc: Exception) -> bool:
         if server_error_cls is not None and isinstance(exc, server_error_cls):
             return True
 
-    transient_types = [
-        _OpenAIRateLimitError,
-        _OpenAIAPItimeoutError,
-        _OpenAIAPIConnectionError,
-        _OpenAIInternalServerError,
-    ]
+    transient_types: List[type] = []
     if httpx is not None:
         for name in ("TimeoutException", "ConnectError", "NetworkError"):
             cls = getattr(httpx, name, None)
             if cls is not None:
                 transient_types.append(cls)
 
-    return isinstance(exc, tuple(transient_types))
+    return bool(transient_types) and isinstance(exc, tuple(transient_types))
 
 
 def _complete_once(
@@ -466,7 +400,7 @@ def count_tokens(config: Any, text: str, client: Any = None) -> Optional[int]:
     try:
         llm_client = create_client(config, client)
         if hasattr(llm_client, "models") and hasattr(llm_client.models, "count_tokens"):
-            model = getattr(config, "model_id", None) or "gemini-3.8-flash"
+            model = getattr(config, "model_id", None) or "gemini-3.5-flash-lite"
             res = llm_client.models.count_tokens(model=model, contents=text)
             total = getattr(res, "total_tokens", None)
             if total is not None:
@@ -495,7 +429,7 @@ def chat_completion(
     if not getattr(config, "model_id", None):
         raise LLMClientConfigError(
             "GEMINI_MODEL_ID is not configured. Set it in .env "
-            "(default: gemini-3.8-flash)."
+            "(default: gemini-3.5-flash-lite)."
         )
     llm_client = create_client(config, client)
     logger = logging.getLogger("educational_summarizer")
