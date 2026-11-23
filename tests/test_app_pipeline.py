@@ -257,7 +257,7 @@ def test_app_gemini_stage_phase_progress_hook() -> None:
         with patch("app.load_config") as mock_cfg, patch("app.count_tokens") as mock_tok, patch("app.generate_summary") as mock_gen:
             mock_cfg.return_value = MagicMock(
                 is_configured=True,
-                model_id="gemini-3.5-flash-lite",
+                model_id="gemini-3.8-flash",
                 thinking_level="low",
                 max_single_request_tokens=16000,
             )

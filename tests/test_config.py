@@ -24,7 +24,7 @@ def test_load_config_defaults(monkeypatch: pytest.MonkeyPatch) -> None:
     config = load_config()
     assert isinstance(config, GeminiConfig)
     assert config.api_key is None
-    assert config.model_id == "gemini-3.5-flash-lite"
+    assert config.model_id == "gemini-3.8-flash"
     assert config.thinking_level == "low"
     assert config.max_output_tokens == 8192
     assert config.max_tokens == 8192
@@ -36,14 +36,14 @@ def test_load_config_defaults(monkeypatch: pytest.MonkeyPatch) -> None:
 
 def test_load_config_reads_values(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("GEMINI_API_KEY", "secret")
-    monkeypatch.setenv("GEMINI_MODEL_ID", "gemini-3.5-flash-lite")
+    monkeypatch.setenv("GEMINI_MODEL_ID", "gemini-3.8-flash")
     monkeypatch.setenv("GEMINI_THINKING_LEVEL", "HIGH")
     monkeypatch.setenv("GEMINI_MAX_OUTPUT_TOKENS", "256")
     monkeypatch.setenv("GEMINI_TEMPERATURE", "0.7")
     monkeypatch.setenv("GEMINI_TIMEOUT_SECONDS", "30")
     config = load_config()
     assert config.api_key == "secret"
-    assert config.model_id == "gemini-3.5-flash-lite"
+    assert config.model_id == "gemini-3.8-flash"
     assert config.thinking_level == "high"
     assert config.max_output_tokens == 256
     assert config.max_tokens == 256
@@ -57,7 +57,7 @@ def test_load_config_empty_strings_treated_as_unset(monkeypatch: pytest.MonkeyPa
     monkeypatch.setenv("GEMINI_MODEL_ID", "")
     config = load_config()
     assert config.api_key is None
-    assert config.model_id == "gemini-3.5-flash-lite"
+    assert config.model_id == "gemini-3.8-flash"
     assert config.is_configured is False
 
 

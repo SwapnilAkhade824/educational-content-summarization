@@ -1,5 +1,5 @@
 {
-  "evaluation_date": "2026-11-23T14:38:02.313016+00:00",
+  "evaluation_date": "2026-11-23T14:53:28.377743+00:00",
   "project": "Educational Content Summarization System",
   "suite": "demo",
   "sample_counts": {
@@ -30,51 +30,19 @@
           "f1": 0.3829787234042553
         }
       },
-      "textrank_avg_latency_seconds": 0.0054,
-      "llm_model_id": "gemini-3.5-flash-lite",
-      "llm_evaluated_count": 1,
-      "llm_macro_rouge": {
-        "rouge_1": {
-          "precision": 0.25,
-          "recall": 0.6470588235294118,
-          "f1": 0.36065573770491804
-        },
-        "rouge_2": {
-          "precision": 0.11627906976744186,
-          "recall": 0.3125,
-          "f1": 0.16949152542372883
-        },
-        "rouge_l": {
-          "precision": 0.22727272727272727,
-          "recall": 0.5882352941176471,
-          "f1": 0.32786885245901637
-        }
-      },
-      "llm_full_output_macro_rouge": {
-        "rouge_1": {
-          "precision": 0.08163265306122448,
-          "recall": 0.9411764705882353,
-          "f1": 0.15023474178403753
-        },
-        "rouge_2": {
-          "precision": 0.05641025641025641,
-          "recall": 0.6875,
-          "f1": 0.10426540284360189
-        },
-        "rouge_l": {
-          "precision": 0.0663265306122449,
-          "recall": 0.7647058823529411,
-          "f1": 0.12206572769953053
-        }
-      },
-      "llm_avg_latency_seconds": 8.8548,
+      "textrank_avg_latency_seconds": 0.0051,
+      "llm_model_id": "gemini-3.8-flash",
+      "llm_evaluated_count": 0,
+      "llm_macro_rouge": null,
+      "llm_full_output_macro_rouge": null,
+      "llm_avg_latency_seconds": null,
       "samples": [
         {
           "id": "demo_1",
           "domain": null,
           "reference_summary": "Machine learning enables computers to learn from data. Data preprocessing, model training, and evaluation are key steps.",
           "textrank_summary": "Machine learning is a subset of artificial intelligence that enables computers to learn from data without explicit programming. Data preprocessing is an important step that cleans and transforms raw data.",
-          "textrank_latency_seconds": 0.0054,
+          "textrank_latency_seconds": 0.0051,
           "textrank_rouge": {
             "rouge_1": {
               "precision": 0.3333333333333333,
@@ -93,45 +61,8 @@
             }
           },
           "llm_summary": {
-            "status": "executed",
-            "model_id": "gemini-3.5-flash-lite",
-            "main_summary": "Machine learning is a subset of artificial intelligence that allows computers to learn from data without explicit programming. The process involves data preprocessing to clean and transform raw data, model training using algorithms to find patterns, and evaluation to measure performance on unseen data.",
-            "summary": "## Main Summary\nMachine learning is a subset of artificial intelligence that allows computers to learn from data without explicit programming. The process involves data preprocessing to clean and transform raw data, model training using algorithms to find patterns, and evaluation to measure performance on unseen data.\n\n## Key Concepts\n- Machine learning processes\n- Data preparation and cleaning\n- Pattern recognition through algorithms\n- Model performance measurement\n\n## Important Definitions\n- Machine learning: A subset of artificial intelligence that enables computers to learn from data without explicit programming.\n- Data preprocessing: An important step that cleans and transforms raw data.\n- Model training: The process that uses algorithms to find patterns.\n- Evaluation: The process that measures how well the model performs on unseen data.\n\n## Important Points\n- Machine learning operates without explicit programming by learning from data.\n- Raw data must undergo preprocessing to be cleaned and transformed.\n- Algorithms are used during model training to identify patterns.\n- Model performance must be evaluated using unseen data.\n\n## Revision Notes\n- Remember the sequential workflow: data preprocessing, model training, and evaluation.\n- Machine learning is defined specifically as a subset of artificial intelligence.",
-            "latency_seconds": 8.8548,
-            "rouge": {
-              "rouge_1": {
-                "precision": 0.25,
-                "recall": 0.6470588235294118,
-                "f1": 0.36065573770491804
-              },
-              "rouge_2": {
-                "precision": 0.11627906976744186,
-                "recall": 0.3125,
-                "f1": 0.16949152542372883
-              },
-              "rouge_l": {
-                "precision": 0.22727272727272727,
-                "recall": 0.5882352941176471,
-                "f1": 0.32786885245901637
-              }
-            },
-            "full_output_rouge": {
-              "rouge_1": {
-                "precision": 0.08163265306122448,
-                "recall": 0.9411764705882353,
-                "f1": 0.15023474178403753
-              },
-              "rouge_2": {
-                "precision": 0.05641025641025641,
-                "recall": 0.6875,
-                "f1": 0.10426540284360189
-              },
-              "rouge_l": {
-                "precision": 0.0663265306122449,
-                "recall": 0.7647058823529411,
-                "f1": 0.12206572769953053
-              }
-            }
+            "status": "failed",
+            "reason": "Service unavailable (503 UNAVAILABLE): 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
           }
         }
       ]

@@ -16,7 +16,7 @@ The application follows a modular src-layout. The Streamlit UI (`app.py`) provid
 8. **TextRank Summarization**: Cosine similarity graph over TF-IDF vectors + NetworkX PageRank. Displays sentence similarity matrix, graph explanation, PageRank scores, ranked/selected sentences, summary text, and compression ratio.
 9. **Information Extraction**: spaCy `en_core_web_sm` NER, frequency-based noun-chunk keyphrases, and regex pattern-based definition extraction.
 10. **LDA Topic Modelling**: scikit-learn `LatentDirichletAllocation` over `CountVectorizer` (Bag-of-Words). Shows topic keywords, weights, document-topic distributions, and dominant topics.
-11. **Gemini Summarization**: Google AI Studio official `google-genai` SDK using `gemini-3.5-flash-lite`. Produces short summary, detailed summary, bullet-point notes, important definitions, and exam revision notes.
+11. **Gemini Summarization**: Google AI Studio official `google-genai` SDK using `gemini-3.8-flash`. Produces short summary, detailed summary, bullet-point notes, important definitions, and exam revision notes.
 
 ## Student Feedback Sentiment Analysis (Separate Section)
 

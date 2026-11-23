@@ -9,7 +9,7 @@ NLP mini-project (Course 2311217L – NLP Lab) that turns educational documents 
   - **BANSUDE SUDARSHAN SAKHARAM**
 - **Mentor:** Prof. Shruti Gadewar
 - **Live app:** https://educational-content-summarization-s6qo8hq4vemjuucuwrxghs.streamlit.app/
-- **Tech:** Python 3.12 · Streamlit · PyMuPDF · NLTK · spaCy · scikit-learn · networkx · Google Gemini (`google-genai`, default `gemini-3.5-flash-lite`)
+- **Tech:** Python 3.12 · Streamlit · PyMuPDF · NLTK · spaCy · scikit-learn · networkx · Google Gemini (`google-genai`, default `gemini-3.8-flash`)
 
 ---
 
@@ -51,7 +51,7 @@ Students and educators deal with long educational documents. Manually summarizin
 | 8 | TextRank Summarization | TF-IDF + cosine similarity + PageRank (networkx) | similarity matrix, graph, scores, ranked & selected sentences, compression ratio |
 | 9 | Information Extraction | spaCy `en_core_web_sm` NER, noun chunks, regex definition patterns | entities with labels & char offsets, keyphrases, definitions |
 | 10 | LDA Topic Modelling | scikit-learn `CountVectorizer` + `LatentDirichletAllocation`; optional Gemini interpretation | chunks, BoW matrix, topic keywords/weights, document-topic distribution |
-| 11 | Gemini Summarization | Google Gemini (`gemini-3.5-flash-lite`) via `google-genai`, 5 versioned prompts, chunking, retries | short/detailed summary, bullet notes, definitions, revision notes |
+| 11 | Gemini Summarization | Google Gemini (`gemini-3.8-flash`) via `google-genai`, 5 versioned prompts, chunking, retries | short/detailed summary, bullet notes, definitions, revision notes |
 | – | Student Feedback Sentiment | NLTK VADER | pos/neg/neu/compound scores, label, batch distribution |
 
 Every stage has its own **▶ Run** button (missing prerequisites run automatically) and live progress feedback; **Run Complete Pipeline** runs all stages in order.

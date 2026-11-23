@@ -400,7 +400,7 @@ def count_tokens(config: Any, text: str, client: Any = None) -> Optional[int]:
     try:
         llm_client = create_client(config, client)
         if hasattr(llm_client, "models") and hasattr(llm_client.models, "count_tokens"):
-            model = getattr(config, "model_id", None) or "gemini-3.5-flash-lite"
+            model = getattr(config, "model_id", None) or "gemini-3.8-flash"
             res = llm_client.models.count_tokens(model=model, contents=text)
             total = getattr(res, "total_tokens", None)
             if total is not None:
@@ -429,7 +429,7 @@ def chat_completion(
     if not getattr(config, "model_id", None):
         raise LLMClientConfigError(
             "GEMINI_MODEL_ID is not configured. Set it in .env "
-            "(default: gemini-3.5-flash-lite)."
+            "(default: gemini-3.8-flash)."
         )
     llm_client = create_client(config, client)
     logger = logging.getLogger("educational_summarizer")

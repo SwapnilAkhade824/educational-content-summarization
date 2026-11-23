@@ -19,7 +19,7 @@ except Exception:  # pragma: no cover - optional dependency
     load_dotenv = None  # type: ignore[assignment]
 
 
-DEFAULT_MODEL_ID = "gemini-3.5-flash-lite"
+DEFAULT_MODEL_ID = "gemini-3.8-flash"
 
 _VALID_THINKING_LEVELS = {"low", "minimal", "medium", "high", "xhigh"}
 
