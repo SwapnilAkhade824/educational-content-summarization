@@ -1,15 +1,20 @@
-"""Google Gemini LLM client using the official google-genai SDK.
+"""Google Gemini LLM client with verified cloud fallback chain and local Ollama fallback.
 
-The client has no Streamlit dependency. Configuration is provided through
-``GeminiConfig`` (loaded centrally from environment variables).
+Tier 1 (Cloud): Primary Gemini model followed by configured verified fallback Gemini models,
+with per-family generation settings (e.g. omitting temperature on Gemini 4 models).
+Tier 2 (Local-only): Fast health check against localhost Ollama (/api/tags, 1.5s timeout).
+When unreachable (e.g. Streamlit Community Cloud), Ollama is skipped immediately without hanging.
 """
 
 from __future__ import annotations
 
+import json
 import logging
 import random
 import re
 import time
+import urllib.error
+import urllib.request
 from dataclasses import dataclass
 from typing import Any, Callable, List, Optional, Sequence, Tuple
 
@@ -165,8 +170,6 @@ def _compute_backoff(
     retry_after: Optional[float] = None,
 ) -> float:
     """Compute bounded exponential backoff with random jitter."""
-    import random
-
     if retry_after is not None and retry_after > 0:
         return min(retry_after, max_delay)
     delay = min(max_delay, base_delay * (2 ** attempt))
@@ -223,6 +226,18 @@ def _map_exception(exc: Exception) -> LLMClientError:
     return LLMClientError(f"Unexpected LLM error: {exc}")
 
 
+def _is_auth_or_token_permanent(exc: Exception) -> bool:
+    """Errors that should never trigger retries or cycling to another cloud model."""
+    msg = str(exc)
+    lower = msg.lower()
+    code = getattr(exc, "code", None) or getattr(exc, "status_code", None)
+    if code in (401, 403) or "unauthenticated" in lower or "api key" in lower or "permission" in lower:
+        return True
+    if "token limit" in lower or "context length" in lower:
+        return True
+    return False
+
+
 def _is_transient(exc: Exception) -> bool:
     """Determine whether an error is transient and eligible for retry.
 
@@ -266,13 +281,186 @@ def _is_transient(exc: Exception) -> bool:
     return bool(transient_types) and isinstance(exc, tuple(transient_types))
 
 
+def _should_try_next_model(exc: Exception) -> bool:
+    """Return True if a failure on one Gemini model should advance to the next fallback."""
+    if _is_auth_or_token_permanent(exc):
+        return False
+    if _is_transient(exc):
+        return True
+    msg = str(exc).lower()
+    code = getattr(exc, "code", None) or getattr(exc, "status_code", None)
+    if code == 404 or "not found" in msg or "missing text" in msg:
+        return True
+    return False
+
+
+# ---------------------------------------------------------------------------
+# Tier 2: Local-only Ollama fallback (zero extra dependencies, Cloud-safe)
+# ---------------------------------------------------------------------------
+
+_OLLAMA_EMBED_MARKERS = ("embed", "bge-", "mxbai", "all-minilm", "snowflake-arctic")
+
+
+def _ollama_url(base_url: str, path: str) -> str:
+    """Build an Ollama endpoint URL, preferring IPv4 127.0.0.1 over Windows IPv6 localhost delay."""
+    raw = base_url if isinstance(base_url, str) and base_url.strip() else "http://localhost:11434"
+    base = raw.strip().rstrip("/")
+    base = re.sub(r"^(https?://)localhost(?=[:/]|$)", r"\g<1>127.0.0.1", base, flags=re.IGNORECASE)
+    return f"{base}{path}"
+
+
+def check_ollama_health(base_url: str = "http://localhost:11434", timeout: float = 1.5) -> Tuple[bool, List[str]]:
+    """Fast local Ollama health check via GET {base_url}/api/tags.
+
+    Returns (is_reachable, installed_model_names). Fails fast (<= 1.5s) on
+    cloud hosts like Streamlit Community Cloud where localhost:11434 is absent.
+    """
+    url = _ollama_url(base_url, "/api/tags")
+    try:
+        if httpx is not None:
+            resp = httpx.get(url, timeout=timeout)
+            if resp.status_code != 200:
+                return False, []
+            payload = resp.json()
+        else:
+            req = urllib.request.Request(url, method="GET")
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                if getattr(resp, "status", 200) != 200:
+                    return False, []
+                payload = json.loads(resp.read().decode("utf-8"))
+        models = payload.get("models") or []
+        names = [str(m.get("name", "")).strip() for m in models if isinstance(m, dict) and m.get("name")]
+        return True, names
+    except Exception:
+        return False, []
+
+
+def select_ollama_model(
+    installed_models: Sequence[str],
+    preferred_model: str = "qwen2.5:1.5b-instruct",
+) -> Optional[str]:
+    """Select the preferred local Ollama model, else a 1.5b instruct tag, else first chat model."""
+    cleaned = [str(m).strip() for m in (installed_models or []) if str(m).strip()]
+    if not cleaned:
+        return None
+
+    pref_low = (preferred_model or "").strip().lower()
+    if pref_low:
+        for name in cleaned:
+            low = name.lower()
+            if low == pref_low or low == f"{pref_low}:latest":
+                return name
+
+    # Prefer any installed 1.5b instruct tag
+    for name in cleaned:
+        low = name.lower()
+        if "1.5b" in low and "instruct" in low:
+            return name
+    for name in cleaned:
+        if "1.5b" in name.lower():
+            return name
+
+    # Fall back to the first installed non-embedding chat model
+    for name in cleaned:
+        low = name.lower()
+        if not any(marker in low for marker in _OLLAMA_EMBED_MARKERS):
+            return name
+    return None
+
+
+def ollama_chat_completion(
+    base_url: str,
+    model: str,
+    messages: Sequence[dict],
+    temperature: float = 0.2,
+    timeout: float = 120.0,
+) -> str:
+    """Send a non-streaming chat completion request to local Ollama (/api/chat)."""
+    url = _ollama_url(base_url, "/api/chat")
+    body: dict[str, Any] = {
+        "model": model,
+        "messages": [
+            {"role": str(m.get("role", "user")), "content": str(m.get("content", ""))}
+            for m in messages
+        ],
+        "stream": False,
+        "options": {
+            "temperature": float(temperature),
+            "num_ctx": 4096,
+        },
+    }
+    if "qwen3" in (model or "").lower():
+        body["think"] = False
+
+    try:
+        if httpx is not None:
+            resp = httpx.post(url, json=body, timeout=timeout)
+            resp.raise_for_status()
+            payload = resp.json()
+        else:
+            raw = json.dumps(body).encode("utf-8")
+            req = urllib.request.Request(
+                url,
+                data=raw,
+                headers={"Content-Type": "application/json"},
+                method="POST",
+            )
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                payload = json.loads(resp.read().decode("utf-8"))
+    except Exception as exc:
+        raise LLMClientError(f"Local Ollama request failed ({model}): {exc}") from exc
+
+    message = payload.get("message") if isinstance(payload, dict) else None
+    content = message.get("content") if isinstance(message, dict) else None
+    if not isinstance(content, str) or not content.strip():
+        raise LLMClientError(f"Malformed or empty local Ollama response ({model}).")
+
+    # Strip optional reasoning tags (e.g. <think>...</think>) if a local reasoning model emits them.
+    cleaned = re.sub(r"<think>.*?</think>\s*", "", content, flags=re.DOTALL | re.IGNORECASE).strip()
+    return cleaned or content.strip()
+
+
+def _try_ollama_fallback(
+    config: Any,
+    messages: Sequence[dict],
+    temperature: Optional[float] = None,
+) -> Optional[Tuple[str, str]]:
+    """Attempt Tier 2 local Ollama fallback if enabled and reachable; returns (text, label) or None."""
+    if not getattr(config, "ollama_enabled", False):
+        return None
+
+    base_url = getattr(config, "ollama_base_url", "http://localhost:11434")
+    preferred = getattr(config, "ollama_model", "qwen2.5:1.5b-instruct")
+    reachable, installed = check_ollama_health(base_url, timeout=1.5)
+    if not reachable:
+        return None
+
+    selected = select_ollama_model(installed, preferred_model=preferred)
+    if not selected:
+        return None
+
+    temp = getattr(config, "temperature", 0.2) if temperature is None else temperature
+    timeout = float(getattr(config, "timeout_seconds", 120))
+    text = ollama_chat_completion(
+        base_url=base_url,
+        model=selected,
+        messages=messages,
+        temperature=temp,
+        timeout=timeout,
+    )
+    return text, f"ollama/{selected} (local fallback)"
+
+
 def _complete_once(
     client: Any,
     config: Any,
     messages: List[dict],
     max_tokens: Optional[int] = None,
     temperature: Optional[float] = None,
+    model_override: Optional[str] = None,
 ) -> str:
+    target_model = model_override or getattr(config, "model_id", None)
+
     # Gemini path.
     if hasattr(client, "models") and hasattr(client.models, "generate_content"):
         system_parts = [str(m.get("content", "")) for m in messages if m.get("role") == "system"]
@@ -291,20 +479,36 @@ def _complete_once(
             contents = [{"role": "user", "parts": [{"text": ""}]}]
 
         temp = getattr(config, "temperature", 0.2) if temperature is None else temperature
-        tokens = getattr(config, "max_output_tokens", getattr(config, "max_tokens", 8192)) if max_tokens is None else max_tokens
+        tokens = (
+            getattr(config, "max_output_tokens", getattr(config, "max_tokens", 8192))
+            if max_tokens is None
+            else max_tokens
+        )
 
-        gen_config_kwargs = {
-            "temperature": temp,
+        lower_model = str(target_model or "").lower()
+        is_gemini_4 = lower_model.startswith("gemini-4")
+
+        gen_config_kwargs: dict[str, Any] = {
             "max_output_tokens": tokens,
         }
+        # Per-family rule: Gemini 4 rejects custom sampling parameters like temperature.
+        if not is_gemini_4:
+            gen_config_kwargs["temperature"] = temp
+
         if system_instruction is not None:
             gen_config_kwargs["system_instruction"] = system_instruction
 
         thinking_level = getattr(config, "thinking_level", None)
-        if thinking_level and genai_types is not None:
+        if is_gemini_4:
+            # Gemini 4 rejects 'minimal' thinking; enforce 'low' (or higher if configured).
+            effective_level = "low" if (not thinking_level or str(thinking_level).lower() == "minimal") else thinking_level
+        else:
+            effective_level = thinking_level
+
+        if effective_level and genai_types is not None:
             try:
                 gen_config_kwargs["thinking_config"] = genai_types.ThinkingConfig(
-                    thinking_level=_thinking_level_value(thinking_level)
+                    thinking_level=_thinking_level_value(effective_level)
                 )
             except Exception:
                 pass
@@ -318,23 +522,23 @@ def _complete_once(
 
         if generate_content_config is None:
             response = client.models.generate_content(
-                model=getattr(config, "model_id", None),
+                model=target_model,
                 contents=contents,
                 **gen_config_kwargs,
             )
         else:
             response = client.models.generate_content(
-                model=getattr(config, "model_id", None),
+                model=target_model,
                 contents=contents,
                 config=generate_content_config,
             )
         return _extract_text_gemini(response)
 
-    # OpenAI-compatible path.
+    # Duck-typed chat.completions path (for unit-test doubles).
     if hasattr(client, "chat") and hasattr(client.chat, "completions"):
         create = client.chat.completions.create
         response = create(
-            model=getattr(config, "model_id", None),
+            model=target_model,
             messages=messages,
             temperature=getattr(config, "temperature", 0.2) if temperature is None else temperature,
             max_tokens=getattr(config, "max_output_tokens", getattr(config, "max_tokens", 1024)) if max_tokens is None else max_tokens,
@@ -344,12 +548,8 @@ def _complete_once(
 
     # Legacy converse path.
     if hasattr(client, "converse"):
-        try:
-            from .llm_client import _complete_once as _shared  # noqa: F401
-        except Exception:
-            pass
         response = client.converse(
-            modelId=getattr(config, "model_id", None),
+            modelId=target_model,
             messages=[{"role": "user", "content": [{"text": messages[-1].get("content", "") if messages else ""}]}],
             system=[{"text": messages[0].get("content", "") if messages and messages[0].get("role") == "system" else ""}],
             inferenceConfig={
@@ -410,6 +610,138 @@ def count_tokens(config: Any, text: str, client: Any = None) -> Optional[int]:
     return None
 
 
+def _build_model_chain(config: Any) -> List[str]:
+    primary = getattr(config, "model_id", None)
+    fallbacks = getattr(config, "fallback_models", ()) or ()
+    chain: List[str] = []
+    if primary:
+        chain.append(str(primary).strip())
+    for fb in fallbacks:
+        m = str(fb).strip()
+        if m and m not in chain:
+            chain.append(m)
+    return chain
+
+
+def chat_completion_with_metadata(
+    config: Any,
+    messages: Sequence[dict],
+    client: Any = None,
+    max_tokens: Optional[int] = None,
+    temperature: Optional[float] = None,
+    retries: int = 2,
+    retry_callback: Optional[Callable[[int, int, float, Exception], None]] = None,
+) -> Tuple[str, str]:
+    """Send a completion request across Tier 1 (Gemini chain) and Tier 2 (local Ollama).
+
+    Returns:
+        Tuple of ``(response_text, backend_model_label)``.
+    """
+    logger = logging.getLogger("educational_summarizer")
+    message_list = [dict(message) for message in messages]
+    api_key = getattr(config, "api_key", None)
+    primary_model = getattr(config, "model_id", None)
+
+    # If Gemini cloud is unconfigured, allow local-only Ollama fallback when enabled & reachable.
+    if not primary_model or (client is None and not api_key):
+        ollama_res = _try_ollama_fallback(config, message_list, temperature=temperature)
+        if ollama_res is not None:
+            logger.info("Using local Ollama fallback: %s", ollama_res[1])
+            return ollama_res
+        if not primary_model:
+            raise LLMClientConfigError(
+                "GEMINI_MODEL_ID is not configured. Set it in .env "
+                "(default: gemini-3.8-flash)."
+            )
+        raise LLMClientConfigError("GEMINI_API_KEY is not configured.")
+
+    llm_client = create_client(config, client)
+    model_chain = _build_model_chain(config)
+    has_fallbacks = len(model_chain) > 1
+
+    # Keep UI snappy when cycling multiple cloud models (max 2 attempts per model);
+    # preserve max 3 attempts when running a single model without fallbacks.
+    max_attempts_per_model = (
+        min(2, max(1, retries + 1)) if has_fallbacks else min(3, max(1, retries + 1))
+    )
+    base_delay = 0.35 if has_fallbacks else 0.5
+    max_delay = 2.5 if has_fallbacks else 8.0
+
+    last_error: Optional[LLMClientError] = None
+
+    for model_idx, target_model in enumerate(model_chain):
+        for attempt in range(max_attempts_per_model):
+            try:
+                text = _complete_once(
+                    llm_client,
+                    config,
+                    message_list,
+                    max_tokens=max_tokens,
+                    temperature=temperature,
+                    model_override=target_model,
+                )
+                label = target_model if model_idx == 0 else f"{target_model} (cloud fallback)"
+                if model_idx > 0:
+                    logger.info("Gemini cloud fallback succeeded via %s", target_model)
+                return text, label
+            except Exception as exc:
+                mapped = _map_exception(exc) if not isinstance(exc, LLMClientError) else exc
+                last_error = mapped
+                is_last_attempt = attempt >= max_attempts_per_model - 1
+
+                if _is_auth_or_token_permanent(exc):
+                    # Auth/token errors will fail identically on other Gemini models.
+                    break
+
+                if not _is_transient(exc):
+                    break
+
+                if not is_last_attempt:
+                    retry_after = _extract_retry_after(exc)
+                    backoff = _compute_backoff(
+                        attempt,
+                        base_delay=base_delay,
+                        max_delay=max_delay,
+                        retry_after=retry_after,
+                    )
+                    if retry_callback:
+                        try:
+                            retry_callback(attempt + 1, max_attempts_per_model, backoff, mapped)
+                        except Exception:
+                            pass
+                    logger.warning(
+                        "Transient LLM error on %s (attempt %d/%d): %s. Retrying in %.2fs",
+                        target_model,
+                        attempt + 1,
+                        max_attempts_per_model,
+                        mapped,
+                        backoff,
+                    )
+                    time.sleep(backoff)
+
+        # Decide whether to advance to the next fallback cloud model
+        if last_error is not None and not _should_try_next_model(last_error):
+            break
+        if model_idx < len(model_chain) - 1:
+            logger.warning(
+                "Gemini model '%s' failed (%s); falling back to '%s'.",
+                target_model,
+                last_error,
+                model_chain[model_idx + 1],
+            )
+
+    # Tier 2: Local-only Ollama fallback (safe no-op if disabled or unreachable)
+    try:
+        ollama_res = _try_ollama_fallback(config, message_list, temperature=temperature)
+        if ollama_res is not None:
+            logger.info("All cloud Gemini models failed; succeeded via %s", ollama_res[1])
+            return ollama_res
+    except LLMClientError as ollama_exc:
+        logger.warning("Local Ollama fallback also failed: %s", ollama_exc)
+
+    raise last_error or LLMClientError("LLM request failed.")
+
+
 def chat_completion(
     config: Any,
     messages: Sequence[dict],
@@ -419,53 +751,17 @@ def chat_completion(
     retries: int = 2,
     retry_callback: Optional[Callable[[int, int, float, Exception], None]] = None,
 ) -> str:
-    """Send a completion request and return the response text.
-
-    Retries transient errors (503 UNAVAILABLE, 504 DEADLINE_EXCEEDED, 429 rate limits,
-    temporary network disconnects) using bounded exponential backoff with jitter and
-    respecting retry-after information when available. Bounded to at most three attempts.
-    Permanent errors (401, 403, 404, bad requests) fail immediately without retry.
-    """
-    if not getattr(config, "model_id", None):
-        raise LLMClientConfigError(
-            "GEMINI_MODEL_ID is not configured. Set it in .env "
-            "(default: gemini-3.8-flash)."
-        )
-    llm_client = create_client(config, client)
-    logger = logging.getLogger("educational_summarizer")
-    last_error: Optional[LLMClientError] = None
-    message_list = [dict(message) for message in messages]
-
-    # Strictly enforce maximum 3 attempts (retries <= 2)
-    max_attempts = min(3, max(1, retries + 1))
-
-    for attempt in range(max_attempts):
-        try:
-            return _complete_once(llm_client, config, message_list, max_tokens=max_tokens, temperature=temperature)
-        except Exception as exc:
-            mapped = _map_exception(exc) if not isinstance(exc, LLMClientError) else exc
-            last_error = mapped
-            is_last = (attempt >= max_attempts - 1)
-            if not _is_transient(exc) or is_last:
-                raise mapped
-
-            retry_after = _extract_retry_after(exc)
-            backoff = _compute_backoff(attempt, base_delay=0.5, max_delay=8.0, retry_after=retry_after)
-            if retry_callback:
-                try:
-                    retry_callback(attempt + 1, max_attempts, backoff, mapped)
-                except Exception:
-                    pass
-            logger.warning(
-                "Transient LLM error on attempt %d/%d: %s. Retrying in %.2fs",
-                attempt + 1,
-                max_attempts,
-                mapped,
-                backoff,
-            )
-            time.sleep(backoff)
-
-    raise last_error or LLMClientError("LLM request failed.")
+    """Send a completion request and return the response text."""
+    text, _ = chat_completion_with_metadata(
+        config,
+        messages,
+        client=client,
+        max_tokens=max_tokens,
+        temperature=temperature,
+        retries=retries,
+        retry_callback=retry_callback,
+    )
+    return text
 
 
 def list_models(config: Any, client: Any = None) -> List[str]:
@@ -493,12 +789,14 @@ def test_connection(config: Any, client: Any = None) -> Tuple[bool, str]:
         {"role": "user", "content": "Reply with exactly: OK"},
     ]
     try:
-        result = chat_completion(config, messages, client=client, max_tokens=8, temperature=0.0, retries=0)
+        result, used_model = chat_completion_with_metadata(
+            config, messages, client=client, max_tokens=64, temperature=0.0, retries=0
+        )
     except LLMClientError as exc:
         return False, str(exc)
     if not result:
         return False, "Empty model response."
-    return True, f"Connected. Model responded: {result[:80]}"
+    return True, f"Connected ({used_model}). Model responded: {result[:80]}"
 
 
 def test_endpoint(config: Any, client: Any = None) -> Tuple[bool, str]:
@@ -506,7 +804,7 @@ def test_endpoint(config: Any, client: Any = None) -> Tuple[bool, str]:
 
 
 class LLMClient:
-    """Small wrapper around configuration and the Gemini client."""
+    """Small wrapper around configuration and the Gemini/Ollama client."""
 
     def __init__(self, config: Any, client: Any = None) -> None:
         self.config = config

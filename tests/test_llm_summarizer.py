@@ -316,3 +316,154 @@ def test_interpret_multiple_topics_single_batched_request_and_markdown_cleanup()
     assert result[1].title == "Deep Neural Network Architectures"
     assert result[2].title == "Graph-Based Extractive Summarization"
 
+
+# ---------------------------------------------------------------------------
+# Cloud Gemini Fallback Chain & Local-Only Ollama Fallback Tests
+# ---------------------------------------------------------------------------
+
+
+def test_primary_gemini_503_falls_back_to_secondary_gemini() -> None:
+    """Primary Gemini 503 should seamlessly fall back to the next verified Gemini model."""
+    models_called: List[str] = []
+
+    class FallbackGeminiClient:
+        def __init__(self) -> None:
+            self.models = SimpleNamespace(
+                generate_content=self._generate_content,
+                count_tokens=lambda **kwargs: SimpleNamespace(total_tokens=50),
+            )
+
+        def _generate_content(self, **kwargs: Any) -> Any:
+            model = kwargs["model"]
+            models_called.append(model)
+            if model == "gemini-3.8-flash":
+                raise _genai_server_error(503, "High demand", "UNAVAILABLE")
+            return SimpleNamespace(text="Fallback Gemini summary output")
+
+    cfg = LLMConfig(
+        api_key="test-key",
+        model_id="gemini-3.8-flash",
+        fallback_models=("gemini-3.5-flash", "gemini-3.6-flash"),
+        ollama_enabled=False,
+    )
+    result = generate_summary("Educational content.", summary_type="short", config=cfg, client=FallbackGeminiClient())
+    assert result.summary_text == "Fallback Gemini summary output"
+    assert result.model_id == "gemini-3.5-flash (cloud fallback)"
+    assert "gemini-3.8-flash" in models_called
+    assert "gemini-3.5-flash" in models_called
+    assert "gemini-3.6-flash" not in models_called
+
+
+def test_all_gemini_fail_falls_back_to_local_ollama(monkeypatch: pytest.MonkeyPatch) -> None:
+    """When all Gemini models fail (503/429) and local Ollama is reachable, Ollama answers."""
+    import summarization.llm_client as client_mod
+
+    class AlwaysFailGeminiClient:
+        def __init__(self) -> None:
+            self.models = SimpleNamespace(
+                generate_content=self._generate_content,
+                count_tokens=lambda **kwargs: SimpleNamespace(total_tokens=40),
+            )
+
+        def _generate_content(self, **kwargs: Any) -> Any:
+            if kwargs["model"] == "gemini-3.8-flash":
+                raise _genai_server_error(503, "Service unavailable", "UNAVAILABLE")
+            raise _genai_client_error(429, "Quota exceeded", "RESOURCE_EXHAUSTED")
+
+    monkeypatch.setattr(
+        client_mod,
+        "check_ollama_health",
+        lambda base_url, timeout=1.5: (True, ["qwen2.5:1.5b-instruct", "llama3.2:3b"]),
+    )
+    monkeypatch.setattr(
+        client_mod,
+        "ollama_chat_completion",
+        lambda base_url, model, messages, temperature=0.2, timeout=120.0: (
+            f"Local summary from {model}"
+        ),
+    )
+
+    cfg = LLMConfig(
+        api_key="test-key",
+        model_id="gemini-3.8-flash",
+        fallback_models=("gemini-3.5-flash",),
+        ollama_enabled=True,
+        ollama_model="qwen2.5:1.5b-instruct",
+    )
+    result = generate_summary("Educational content.", summary_type="short", config=cfg, client=AlwaysFailGeminiClient())
+    assert result.summary_text == "Local summary from qwen2.5:1.5b-instruct"
+    assert result.model_id == "ollama/qwen2.5:1.5b-instruct (local fallback)"
+
+
+def test_all_gemini_fail_and_ollama_unreachable_raises_gracefully(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Streamlit Cloud simulation: all Gemini models fail & localhost Ollama unreachable fails fast."""
+    import summarization.llm_client as client_mod
+
+    class AlwaysFailGeminiClient:
+        def __init__(self) -> None:
+            self.models = SimpleNamespace(
+                generate_content=lambda **kwargs: (_ for _ in ()).throw(
+                    _genai_server_error(503, "Overloaded", "UNAVAILABLE")
+                ),
+                count_tokens=lambda **kwargs: SimpleNamespace(total_tokens=40),
+            )
+
+    health_calls: List[tuple[str, float]] = []
+
+    def _unreachable(base_url: str, timeout: float = 1.5):
+        health_calls.append((base_url, timeout))
+        return False, []
+
+    monkeypatch.setattr(client_mod, "check_ollama_health", _unreachable)
+
+    cfg = LLMConfig(
+        api_key="test-key",
+        model_id="gemini-3.8-flash",
+        fallback_models=("gemini-3.5-flash",),
+        ollama_enabled=True,
+    )
+    with pytest.raises(LLMError) as exc_info:
+        generate_summary("Educational content.", summary_type="short", config=cfg, client=AlwaysFailGeminiClient())
+    assert "503" in str(exc_info.value) or "unavailable" in str(exc_info.value).lower()
+    assert len(health_calls) == 1
+    assert health_calls[0][1] <= 1.5
+
+
+def test_gemini_4_omits_temperature_and_uses_low_thinking() -> None:
+    """Gemini 4 models must omit temperature and never pass minimal thinking."""
+    captured: List[dict] = []
+
+    class CaptureClient:
+        def __init__(self) -> None:
+            self.models = SimpleNamespace(
+                generate_content=self._generate_content,
+                count_tokens=lambda **kwargs: SimpleNamespace(total_tokens=30),
+            )
+
+        def _generate_content(self, **kwargs: Any) -> Any:
+            captured.append(kwargs)
+            return SimpleNamespace(text="Gemini 4 output")
+
+    cfg = LLMConfig(
+        api_key="test-key",
+        model_id="gemini-4-hydrogen",
+        thinking_level="minimal",
+        temperature=0.2,
+        ollama_enabled=False,
+    )
+    result = generate_summary("Educational content.", summary_type="short", config=cfg, client=CaptureClient())
+    assert result.summary_text == "Gemini 4 output"
+    gen_cfg = captured[0]["config"]
+    assert gen_cfg.temperature is None
+    assert str(gen_cfg.thinking_config.thinking_level).lower().endswith("low")
+
+
+def test_select_ollama_model_preference_order() -> None:
+    from summarization.llm_client import select_ollama_model
+
+    assert select_ollama_model(["llama3:8b", "qwen2.5:1.5b-instruct"], "qwen2.5:1.5b-instruct") == "qwen2.5:1.5b-instruct"
+    assert select_ollama_model(["llama3:8b", "deepseek:1.5b-instruct"], "qwen2.5:1.5b-instruct") == "deepseek:1.5b-instruct"
+    assert select_ollama_model(["nomic-embed-text:latest", "qwen3.5:4b"], "qwen2.5:1.5b-instruct") == "qwen3.5:4b"
+    assert select_ollama_model([], "qwen2.5:1.5b-instruct") is None
+
+

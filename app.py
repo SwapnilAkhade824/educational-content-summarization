@@ -41,7 +41,7 @@ try:
     from topic_modeling.lda_model import run_lda
     from sentiment.sentiment_analyzer import analyze_feedback, analyze_batch
     from utils.config import load_config
-    from summarization.llm_client import count_tokens, test_connection
+    from summarization.llm_client import check_ollama_health, count_tokens, test_connection
     from ui.helpers import build_export_markdown
 except ImportError:  # pragma: no cover
     from src.extraction.text_extractor import extract_document, ExtractionError
@@ -65,7 +65,7 @@ except ImportError:  # pragma: no cover
     from src.topic_modeling.lda_model import run_lda
     from src.sentiment.sentiment_analyzer import analyze_feedback, analyze_batch
     from src.utils.config import load_config
-    from src.summarization.llm_client import count_tokens, test_connection
+    from src.summarization.llm_client import check_ollama_health, count_tokens, test_connection
     from src.ui.helpers import build_export_markdown
 
 
@@ -207,7 +207,9 @@ _ALL_KEYS = (
         "concepts_result",
         "lda_result",
         "lda_interpretations",
+        "lda_interp_model",
         "gemini_results",
+        "gemini_active_model",
         "gemini_status_info",
         "gemini_error",
         "gemini_chunk_cache",
@@ -683,13 +685,25 @@ def _run_lda_stage(
         return False
 
 
+def _has_any_llm_backend(cfg: Any) -> bool:
+    """Return True when Gemini cloud is configured or local Ollama is reachable."""
+    if getattr(cfg, "is_configured", False) is True:
+        return True
+    if getattr(cfg, "ollama_enabled", False) is True:
+        base_url = getattr(cfg, "ollama_base_url", "http://localhost:11434")
+        if isinstance(base_url, str) and base_url.strip():
+            reachable, installed = check_ollama_health(base_url, timeout=1.5)
+            return reachable and bool(installed)
+    return False
+
+
 def _run_gemini_stage(
     step_hook: Optional[Callable[[int, int, str, Dict[str, Any]], None]] = None,
 ) -> bool:
-    """Stage 11: Gemini Summarization with live phase & chunk progress feedback."""
+    """Stage 11: Gemini Summarization (with cloud fallback & local Ollama fallback)."""
     text = st.session_state.get("raw_text", "")
     cfg = load_config()
-    if not cfg.is_configured:
+    if not _has_any_llm_backend(cfg):
         _set_stage("stage_gemini", "Warning")
         return False
     if not text or not text.strip():
@@ -773,9 +787,11 @@ def _run_gemini_stage(
             )
             results[stype] = result.summary_text
             st.session_state["gemini_results"] = results
+            if getattr(result, "model_id", None):
+                st.session_state["gemini_active_model"] = result.model_id
             _log_stage_step(
                 "stage_gemini",
-                f"Phase {phase_idx}/{total_phases} ({phase_label}): Completed ({result.chunk_count} request chunk(s)).",
+                f"Phase {phase_idx}/{total_phases} ({phase_label}): Completed via {getattr(result, 'model_id', cfg.model_id)} ({result.chunk_count} request chunk(s)).",
             )
 
         _set_stage("stage_gemini", "Completed")
@@ -1426,26 +1442,29 @@ def _display_stage_10(show_header: bool = True) -> None:
         else:
             st.write("No document-topic data.")
 
-    # Optional CO3 Cloud-AI Topic Interpretation (Google Gemini)
+    # Optional CO3 Cloud-AI Topic Interpretation (Google Gemini + local Ollama fallback)
     cfg = load_config()
-    if cfg.is_configured and result.topics:
+    if _has_any_llm_backend(cfg) and result.topics:
         if st.button(
             "Interpret LDA topics with Gemini (Cloud AI — CO3)",
             key="btn_interpret_topics",
             icon=":material/auto_awesome:",
         ):
-            with st.status("Interpreting LDA topics with Google Gemini (1 batched request)...", expanded=True) as status_box:
+            with st.status("Interpreting LDA topics with AI (1 batched request)...", expanded=True) as status_box:
                 try:
-                    st.write("Sending local LDA topic keywords and weights to Gemini...")
+                    st.write("Sending local LDA topic keywords and weights for interpretation...")
                     interps = interpret_topics(result.topics, config=cfg)
                     st.session_state["lda_interpretations"] = interps
-                    status_box.update(label="Cloud-AI topic interpretation complete", state="complete", expanded=False)
+                    used_model = getattr(interps[0], "model_id", None) if interps else None
+                    if used_model:
+                        st.session_state["lda_interp_model"] = used_model
+                    status_box.update(label="AI topic interpretation complete", state="complete", expanded=False)
                 except Exception as exc:
                     err_text = str(exc)
                     status_label = (
-                        "Cloud-AI topic interpretation paused (quota limit)"
+                        "AI topic interpretation paused (quota limit)"
                         if _is_quota_error(err_text)
-                        else "Cloud-AI topic interpretation unavailable"
+                        else "AI topic interpretation unavailable"
                     )
                     status_box.update(label=status_label, state="error", expanded=False)
                     _render_gemini_error(err_text, context="LDA topic interpretation")
@@ -1461,6 +1480,11 @@ def _display_stage_10(show_header: bool = True) -> None:
                 st.markdown(f"**Topic {item.topic_id}: {item.title}**")
                 st.write(item.explanation)
                 st.caption(f"Source LDA keywords: {', '.join(item.keywords)}")
+            interp_model = st.session_state.get("lda_interp_model") or (
+                getattr(interps[0], "model_id", None) if interps else None
+            )
+            if interp_model:
+                st.caption(f"Generated via `{interp_model}`")
 
 
 _GEMINI_TAB_ICONS: Dict[str, str] = {
@@ -1478,8 +1502,9 @@ def _display_stage_11(show_header: bool = True) -> None:
         st.markdown(_stage_heading_md(11, st.session_state["stage_gemini"]))
     _render_stage_log("stage_gemini")
     cfg = load_config()
+    active_model = st.session_state.get("gemini_active_model")
     c_mod, c_stat, c_tok = st.columns(3)
-    c_mod.metric("Configured model", cfg.model_id or "Not set", border=True, height="stretch")
+    c_mod.metric("Active / configured model", active_model or cfg.model_id or "Not set", border=True, height="stretch")
     c_stat.metric("Generation status", st.session_state.get("stage_gemini", "Not Started"), border=True, height="stretch")
     tok_count = st.session_state.get("gemini_token_count")
     c_tok.metric(
@@ -1489,10 +1514,11 @@ def _display_stage_11(show_header: bool = True) -> None:
         height="stretch",
     )
 
-    if not cfg.is_configured:
+    if not _has_any_llm_backend(cfg):
         st.info(
-            "Gemini is not configured. Set your API key in .env. "
-            "All traditional NLP stages (Stages 1–10) and VADER sentiment analysis work independently.",
+            "Both Google Gemini cloud AI and local Ollama are currently unavailable. "
+            "**Stages 1–10 (TextRank, TF-IDF, NER, Definitions, LDA) and VADER Sentiment "
+            "remain 100% functional offline.**",
             icon=":material/info:",
         )
         return
@@ -1546,6 +1572,8 @@ def _display_stage_11(show_header: bool = True) -> None:
         for tab, (key, _label) in zip(tabs, _GEMINI_SUMMARY_PHASES):
             with tab:
                 st.markdown(results.get(key, "_Not generated yet._"))
+    if active_model:
+        st.caption(f"Generated via `{active_model}`")
 
 
 # ---------------------------------------------------------------------------

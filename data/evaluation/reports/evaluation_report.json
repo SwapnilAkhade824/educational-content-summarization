@@ -1,5 +1,5 @@
 {
-  "evaluation_date": "2026-11-23T14:53:28.377743+00:00",
+  "evaluation_date": "2026-11-23T15:18:09.246004+00:00",
   "project": "Educational Content Summarization System",
   "suite": "demo",
   "sample_counts": {
@@ -30,19 +30,51 @@
           "f1": 0.3829787234042553
         }
       },
-      "textrank_avg_latency_seconds": 0.0051,
+      "textrank_avg_latency_seconds": 0.005,
       "llm_model_id": "gemini-3.8-flash",
-      "llm_evaluated_count": 0,
-      "llm_macro_rouge": null,
-      "llm_full_output_macro_rouge": null,
-      "llm_avg_latency_seconds": null,
+      "llm_evaluated_count": 1,
+      "llm_macro_rouge": {
+        "rouge_1": {
+          "precision": 0.2391304347826087,
+          "recall": 0.6470588235294118,
+          "f1": 0.34920634920634924
+        },
+        "rouge_2": {
+          "precision": 0.15555555555555556,
+          "recall": 0.4375,
+          "f1": 0.2295081967213115
+        },
+        "rouge_l": {
+          "precision": 0.2391304347826087,
+          "recall": 0.6470588235294118,
+          "f1": 0.34920634920634924
+        }
+      },
+      "llm_full_output_macro_rouge": {
+        "rouge_1": {
+          "precision": 0.05907172995780591,
+          "recall": 0.8235294117647058,
+          "f1": 0.11023622047244096
+        },
+        "rouge_2": {
+          "precision": 0.03389830508474576,
+          "recall": 0.5,
+          "f1": 0.06349206349206349
+        },
+        "rouge_l": {
+          "precision": 0.05063291139240506,
+          "recall": 0.7058823529411765,
+          "f1": 0.09448818897637794
+        }
+      },
+      "llm_avg_latency_seconds": 7.0956,
       "samples": [
         {
           "id": "demo_1",
           "domain": null,
           "reference_summary": "Machine learning enables computers to learn from data. Data preprocessing, model training, and evaluation are key steps.",
           "textrank_summary": "Machine learning is a subset of artificial intelligence that enables computers to learn from data without explicit programming. Data preprocessing is an important step that cleans and transforms raw data.",
-          "textrank_latency_seconds": 0.0051,
+          "textrank_latency_seconds": 0.005,
           "textrank_rouge": {
             "rouge_1": {
               "precision": 0.3333333333333333,
@@ -61,8 +93,45 @@
             }
           },
           "llm_summary": {
-            "status": "failed",
-            "reason": "Service unavailable (503 UNAVAILABLE): 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+            "status": "executed",
+            "model_id": "gemini-3.5-flash (cloud fallback)",
+            "main_summary": "Machine learning is a subset of artificial intelligence that allows computers to learn from data without being explicitly programmed. The process involves cleaning and transforming raw data through data preprocessing, using algorithms to find patterns during model training, and assessing performance on unseen data through evaluation.",
+            "summary": "## Main Summary\nMachine learning is a subset of artificial intelligence that allows computers to learn from data without being explicitly programmed. The process involves cleaning and transforming raw data through data preprocessing, using algorithms to find patterns during model training, and assessing performance on unseen data through evaluation.\n\n## Key Concepts\n- Machine learning as a branch of artificial intelligence.\n- Preparing raw data through preprocessing.\n- Pattern recognition via model training.\n- Performance measurement through evaluation.\n\n## Important Definitions\n- **Machine learning:** A subset of artificial intelligence that enables computers to learn from data without explicit programming.\n- **Data preprocessing:** An important step that cleans and transforms raw data.\n- **Model training:** The process that uses algorithms to find patterns.\n- **Evaluation:** The step that measures how well the model performs on unseen data.\n\n## Important Points\n- Machine learning eliminates the need for explicit programming by relying on data.\n- Data preprocessing is essential for cleaning and transforming raw input data.\n- Model training relies on algorithms to detect underlying patterns.\n- Model success is determined by evaluating its performance on unseen data.\n\n## Revision Notes\n- **Core Concept:** Machine Learning $\\rightarrow$ Subset of Artificial Intelligence (learns from data without explicit programming).\n- **Step 1: Data Preprocessing** $\\rightarrow$ Cleans and transforms raw data.\n- **Step 2: Model Training** $\\rightarrow$ Uses algorithms to find patterns.\n- **Step 3: Evaluation** $\\rightarrow$ Measures performance on unseen data.",
+            "latency_seconds": 7.0956,
+            "rouge": {
+              "rouge_1": {
+                "precision": 0.2391304347826087,
+                "recall": 0.6470588235294118,
+                "f1": 0.34920634920634924
+              },
+              "rouge_2": {
+                "precision": 0.15555555555555556,
+                "recall": 0.4375,
+                "f1": 0.2295081967213115
+              },
+              "rouge_l": {
+                "precision": 0.2391304347826087,
+                "recall": 0.6470588235294118,
+                "f1": 0.34920634920634924
+              }
+            },
+            "full_output_rouge": {
+              "rouge_1": {
+                "precision": 0.05907172995780591,
+                "recall": 0.8235294117647058,
+                "f1": 0.11023622047244096
+              },
+              "rouge_2": {
+                "precision": 0.03389830508474576,
+                "recall": 0.5,
+                "f1": 0.06349206349206349
+              },
+              "rouge_l": {
+                "precision": 0.05063291139240506,
+                "recall": 0.7058823529411765,
+                "f1": 0.09448818897637794
+              }
+            }
           }
         }
       ]

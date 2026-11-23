@@ -24,6 +24,8 @@ try:
     from ..summarization.llm_client import (
         LLMClientError,
         chat_completion,
+        chat_completion_with_metadata,
+        check_ollama_health,
         count_tokens,
         create_client,
     )
@@ -31,6 +33,8 @@ except ImportError:  # pragma: no cover - supports src-layout imports
     from summarization.llm_client import (
         LLMClientError,
         chat_completion,
+        chat_completion_with_metadata,
+        check_ollama_health,
         count_tokens,
         create_client,
     )
@@ -100,6 +104,7 @@ class TopicInterpretation:
     keywords: List[str] = field(default_factory=list)
     weights: List[float] = field(default_factory=list)
     llm_assisted: bool = True
+    model_id: Optional[str] = None
 
 
 def _logger() -> logging.Logger:
@@ -126,6 +131,13 @@ def _validate_text(text: str) -> str:
 def _resolve_config(config: Optional[LLMConfig]) -> LLMConfig:
     cfg = config if config is not None else load_config()
     if not cfg.is_configured:
+        if getattr(cfg, "ollama_enabled", False):
+            reachable, installed = check_ollama_health(
+                getattr(cfg, "ollama_base_url", "http://localhost:11434"),
+                timeout=1.5,
+            )
+            if reachable and installed:
+                return cfg
         raise LLMConfigError(
             "Gemini is not configured. Set GEMINI_API_KEY in .env "
             "(and optionally GEMINI_MODEL_ID)."
@@ -136,6 +148,9 @@ def _resolve_config(config: Optional[LLMConfig]) -> LLMConfig:
 def _create_client(config: LLMConfig, client: Any = None) -> Any:
     if client is not None:
         return client
+    if not config.is_configured:
+        # Local Ollama-only path when Gemini key is absent.
+        return None
     try:
         return create_client(config)
     except LLMError as exc:
@@ -152,6 +167,10 @@ def _complete_once(client: Any, config: LLMConfig, messages: List[dict]) -> str:
 
 def _complete(client: Any, config: LLMConfig, messages: List[dict]) -> str:
     return chat_completion(config, messages, client=client)
+
+
+def _complete_with_meta(client: Any, config: LLMConfig, messages: List[dict]) -> tuple[str, str]:
+    return chat_completion_with_metadata(config, messages, client=client)
 
 
 def chunk_text(text: str, chunk_size: int = 4000, overlap: int = 400) -> List[str]:
@@ -405,8 +424,10 @@ def interpret_topics(
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt},
         ]
-        generated = _complete(llm_client, cfg, messages)
-        return [_parse_topic_interpretation(generated, topic_id, keywords, weights)]
+        generated, used_model = _complete_with_meta(llm_client, cfg, messages)
+        parsed = _parse_topic_interpretation(generated, topic_id, keywords, weights)
+        parsed.model_id = used_model
+        return [parsed]
 
     # Batched single-request path for multiple topics (1 API call instead of N calls)
     topic_sections: List[str] = []
@@ -430,15 +451,15 @@ def interpret_topics(
         {"role": "system", "content": system_prompt},
         {"role": "user", "content": batched_prompt},
     ]
-    generated = _complete(llm_client, cfg, messages)
+    generated, used_model = _complete_with_meta(llm_client, cfg, messages)
     per_topic_blocks = _split_batched_topic_blocks(generated, topic_ids)
 
     interpretations: List[TopicInterpretation] = []
     for topic_id, keywords, weights in normalized_items:
         block = per_topic_blocks.get(topic_id, generated)
-        interpretations.append(
-            _parse_topic_interpretation(block, topic_id, keywords, weights)
-        )
+        parsed = _parse_topic_interpretation(block, topic_id, keywords, weights)
+        parsed.model_id = used_model
+        interpretations.append(parsed)
     return interpretations
 
 
@@ -478,7 +499,7 @@ def generate_summary(
     max_single_tokens = getattr(cfg, "max_single_request_tokens", 16000)
 
     # 1. Short Document Optimization using official SDK token counting
-    exact_tokens = count_tokens(cfg, text, client=llm_client)
+    exact_tokens = count_tokens(cfg, text, client=llm_client) if llm_client is not None else None
     if exact_tokens is not None and exact_tokens <= max_single_tokens:
         logger.info(
             "Short document optimization: exact token count %d fits budget %d; processing in 1 request.",
@@ -499,7 +520,7 @@ def generate_summary(
             {"role": "user", "content": prompt},
         ]
         try:
-            generated = _complete(llm_client, cfg, messages)
+            generated, used_model = _complete_with_meta(llm_client, cfg, messages)
         except Exception as exc:
             if progress_callback:
                 progress_callback({
@@ -526,7 +547,7 @@ def generate_summary(
             chunks_completed=1,
             chunks_failed=0,
             warnings=warnings,
-            model_id=cfg.model_id,
+            model_id=used_model,
         )
 
     # 2. Hierarchical Chunk-based Summarization for genuinely long documents
@@ -548,7 +569,7 @@ def generate_summary(
             {"role": "user", "content": prompt},
         ]
         try:
-            generated = _complete(llm_client, cfg, messages)
+            generated, used_model = _complete_with_meta(llm_client, cfg, messages)
         except Exception as exc:
             if progress_callback:
                 progress_callback({
@@ -575,7 +596,7 @@ def generate_summary(
             chunks_completed=1,
             chunks_failed=0,
             warnings=warnings,
-            model_id=cfg.model_id,
+            model_id=used_model,
         )
 
     # 3. Resumable Chunk Processing for multi-chunk documents
@@ -653,7 +674,7 @@ def generate_summary(
                 "failed_chunks": 0,
                 "retry_status": "Combining chunk summaries into final summary",
             })
-        generated = _complete(llm_client, cfg, messages)
+        generated, used_model = _complete_with_meta(llm_client, cfg, messages)
     except Exception as exc:
         if progress_callback:
             progress_callback({
@@ -685,5 +706,5 @@ def generate_summary(
         chunks_completed=len(chunks),
         chunks_failed=0,
         warnings=warnings,
-        model_id=cfg.model_id,
+        model_id=used_model,
     )
